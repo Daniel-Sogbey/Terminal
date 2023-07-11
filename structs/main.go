@@ -21,9 +21,9 @@ func main() {
 	}
 
 	//Memory address of jim
-	jimPointer := &jim
-	fmt.Printf("Memory Address of Jim %p", jimPointer)
-	jimPointer.updateName("Jimmy")
+	// jimPointer := &jim
+	// fmt.Printf("Memory Address of Jim %p", jimPointer)
+	jim.updateName("Jimmie")
 	jim.print()
 }
 
@@ -31,6 +31,10 @@ func (pointerToPerson *person) updateName(newFirstName string) {
 	(*pointerToPerson).firstName = newFirstName
 }
 
+// func (p person) updateName (newFirstName string) {
+// p.firstName = newFirstName;
+// }
+
 func (p person) print() {
-	// fmt.Printf("%+v", p)
+	fmt.Printf("%+v", p)
 }
