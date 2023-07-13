@@ -13,19 +13,21 @@ func main() {
 	eb := englishBot{}
 	sb := spanishBot{}
 
-	r := rectangle{
-		width:  20,
+	printGreeting(eb)
+	printGreeting(sb)
+
+	//Assignment
+	t := triangle{
+		base:   5,
 		height: 10,
 	}
 
-	c := circle{
-		radius: 15,
+	s := square{
+		sideLength: 10,
 	}
 
-	printGreeting(eb)
-	printGreeting(sb)
-	printArea(r)
-	printArea(c)
+	t.printArea()
+	s.printArea()
 }
 
 func printGreeting(b bot) {
