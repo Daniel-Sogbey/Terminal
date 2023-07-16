@@ -22,10 +22,9 @@ func main() {
 
 	currentTask = AddTask(*taskPtr)
 
-	fmt.Printf("Start the task! Focus on %s\n", currentTask)
+	fmt.Printf("Start the task! Focus on : %s\n", currentTask)
 
 	timer1 := time.NewTimer(25 * time.Second)
-
 	<-timer1.C
 
 	fmt.Println("Congrats!, Task time is complete. Take break")
