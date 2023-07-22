@@ -21,3 +21,8 @@ func findCommonItem(a string, b string) string {
 	}
 	return str
 }
+
+// solution 2 :
+func findCommonItem2(a string, b string) string {
+	return ""
+}
