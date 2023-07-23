@@ -19,4 +19,5 @@ use (
 	./pomodoro-go-cli
 	./structs
 	./strings
+	./modules
 )
