@@ -8,12 +8,10 @@ import (
 
 const portNumber = ":8080"
 
-// Home is the home page handler
 func Home(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "home.page.tmpl")
 }
 
-// About is the about page handler
 func About(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "about.page.tmpl")
 }
@@ -22,18 +20,18 @@ func renderTemplate(w http.ResponseWriter, tmpl string) {
 	parsedTemplate, err := template.ParseFiles("./templates/" + tmpl)
 
 	if err != nil {
-		fmt.Println("error parsing template, ", err)
+		fmt.Printf("Failed to parse template %v", err)
 		return
 	}
 
 	parsedTemplate.Execute(w, nil)
 }
 
-// main is the main application function
 func main() {
+
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/about", About)
 
-	fmt.Printf("Starting application on port %s", portNumber)
-	_ = http.ListenAndServe(portNumber, nil)
+	fmt.Printf("Server started and listening on port %s", portNumber)
+	http.ListenAndServe(portNumber, nil)
 }
