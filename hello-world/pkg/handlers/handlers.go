@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/Daniel-Sogbey/hello-world/render"
+	"github.com/Daniel-Sogbey/hello-world/pkg/render"
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
