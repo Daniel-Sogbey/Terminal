@@ -2,22 +2,37 @@ go 1.20
 
 use (
 	"./Daily algorithms in Go"
+	"./Daily algorithms in Go/IsSubsequence"
+	"./Daily algorithms in Go/MergeTwoSortedArrays"
 	"./Daily algorithms in Go/PalindromeCheck"
+	"./Daily algorithms in Go/PascalsTriangle"
+	"./Daily algorithms in Go/Richest Customer Wealth"
 	"./Daily algorithms in Go/RunLengthEncoding"
+	"./Daily algorithms in Go/RunningSumOfIDArray"
 	"./Daily algorithms in Go/TwoNumberSums"
 	"./Daily algorithms in Go/caeser cipher encryptor"
 	"./file reader"
-	.
 	./Algorithms
+	./arrays
 	./card
 	./channels
 	./even_odd
+	./go-server
 	./guessing_game
+	./hello-world
 	./http
 	./interface
+	./interfaces-2
 	./map
-	./pomodoro-go-cli
-	./structs
-	./strings
 	./modules
+	./pomodoro-go-cli
+	./strings
+	./structs
+	./web-service-gin
+	./writing_go_test
+	./youtube-series
+	./pointers
+	./structs-2
+	./channels-2
+
 )
