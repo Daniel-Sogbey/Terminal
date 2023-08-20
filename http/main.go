@@ -7,8 +7,7 @@ import (
 	"os"
 )
 
-// type logWriter struct {
-// }
+type logWriter struct{}
 
 func main() {
 	resp, err := http.Get("http://google.com")
@@ -26,12 +25,20 @@ func main() {
 	// 0xc000132000
 	// 0xc0000c8260
 
-	file, err := os.Create("google.txt")
+	// file, err := os.Create("google.txt")
 
 	if err != nil {
 		os.Exit(1)
 	}
 
-	io.Copy(file, resp.Body)
+	lw := logWriter{}
 
+	io.Copy(lw, resp.Body)
+
+}
+
+func (logWriter) Write(bs []byte) (int, error) {
+	fmt.Println(string(bs))
+	fmt.Println("Wrote this many bytes : ", len(bs))
+	return len(bs), nil
 }
