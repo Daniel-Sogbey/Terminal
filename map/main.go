@@ -10,6 +10,8 @@ func main() {
 		"white": "#ffffff",
 	}
 
+	// colors := make(map[string]string)
+
 	printMap(colors)
 
 	fmt.Println(colors)
