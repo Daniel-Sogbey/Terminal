@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 type Status struct {
@@ -48,16 +49,17 @@ func getUrl(service string) string {
 
 func formatResponse(response *http.Response) (Fact, error) {
 	var res []Response
-	decoder := json.NewDecoder(response.Body)
+	err := json.NewDecoder(response.Body).Decode(&res)
+	// err := json.Unmarshal([]byte(response.Body),&res)
 
-	if err := decoder.Decode(&res); err != nil {
+	if err != nil {
 		return Fact{}, err
 	}
 
 	data := []Response{}
 
 	for _, fact := range res {
-		fmt.Println(fact.ID)
+		// fmt.Println(fact.ID)
 		response := Response{
 			Status:    fact.Status,
 			ID:        fact.ID,
@@ -99,7 +101,10 @@ func (c *Client) Get() (Fact, error) {
 
 	defer resp.Body.Close()
 
+	os.Setenv("API_KEY", "asdfhgj3409ygjoadks")
+
 	fmt.Printf("RESPONSE %v", resp.StatusCode)
+	fmt.Printf("ENVIRONMENT VARIABLE %v", os.Getenv("API_KEY"))
 
 	return formatResponse(resp)
 

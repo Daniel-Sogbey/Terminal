@@ -2,6 +2,7 @@ package main
 
 import (
 	"channels-2/helpers"
+	"fmt"
 	"log"
 )
 
@@ -21,4 +22,7 @@ func main() {
 	num := <-intChan
 
 	log.Println(num)
+
+	fmt.Println(helpers.MinimumNumber(1, 3))
+	fmt.Println(helpers.MaximumNumber(10, 7))
 }

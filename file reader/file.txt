@@ -1,1 +1,0 @@
-My name is Daniel Sogbey. The new Go Developer in town.

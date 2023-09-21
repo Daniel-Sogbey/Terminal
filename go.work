@@ -1,4 +1,4 @@
-go 1.20
+go 1.21.1
 
 use (
 	"./Daily algorithms in Go"
@@ -12,10 +12,18 @@ use (
 	"./Daily algorithms in Go/TwoNumberSums"
 	"./Daily algorithms in Go/caeser cipher encryptor"
 	"./file reader"
+	"./open source/africastalking-go"
+	"./open source/go-paystack"
+	"./open source/go-paystack-cli"
+	"./open source/gomono"
+	"./open source/soft"
 	./Algorithms
+	./ReadAndWriteFromJson
 	./arrays
 	./card
 	./channels
+	./channels-2
+	./cli
 	./even_odd
 	./go-server
 	./guessing_game
@@ -25,14 +33,16 @@ use (
 	./interfaces-2
 	./map
 	./modules
+	./pointers
 	./pomodoro-go-cli
 	./strings
 	./structs
+	./structs-2
+	./task-api
+	./test-api
+	./web-development
 	./web-service-gin
 	./writing_go_test
 	./youtube-series
-	./pointers
-	./structs-2
-	./channels-2
 
 )
