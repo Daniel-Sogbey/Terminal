@@ -9,10 +9,11 @@ import (
 )
 
 const (
-	host   = "localhost"
-	port   = 5432
-	user   = "postgres"
-	dbname = "taskDB"
+	host     = "localhost"
+	port     = 5432
+	user     = "postgres"
+	password = "    "
+	dbname   = "taskDB"
 )
 
 func ConnectDB() *sql.DB {
