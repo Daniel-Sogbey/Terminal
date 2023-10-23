@@ -9,13 +9,13 @@ import (
 	"github.com/Daniel-Sogbey/hello-world/pkg/render"
 )
 
-// Repo the repository used by the handlers
-var Repo *Repository
-
 // Repository is the repository
 type Repository struct {
 	App *config.AppConfig
 }
+
+// Repo the repository used by the handlers
+var Repo *Repository
 
 // NewRepo creates a new repository
 func NewRepo(a *config.AppConfig) *Repository {
@@ -30,11 +30,17 @@ func NewHandlers(r *Repository) {
 }
 
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+
+	stringMap := make(map[string]string)
+
+	stringMap["test"] = "Hello, Home Page!"
 	fmt.Println(m.App.UseCache)
 	remoteIP := r.RemoteAddr
 	fmt.Println(remoteIP)
 	m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
-	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }
 
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
@@ -49,4 +55,8 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{
 		StringMap: stringMap,
 	})
+}
+
+func (m *Repository) Index(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, "index.page.tmpl", &models.TemplateData{})
 }
