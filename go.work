@@ -1,14 +1,21 @@
 go 1.21.1
 
 use (
+	"./Build Rest APIs In Go/romanserver"
 	"./Daily algorithms in Go"
+	"./Daily algorithms in Go/CommonCharacters"
+	"./Daily algorithms in Go/FizzBuzz"
 	"./Daily algorithms in Go/IsSubsequence"
 	"./Daily algorithms in Go/MergeTwoSortedArrays"
+	"./Daily algorithms in Go/NumberOfSteps"
 	"./Daily algorithms in Go/PalindromeCheck"
 	"./Daily algorithms in Go/PascalsTriangle"
+	"./Daily algorithms in Go/RemoveDuplicateFromSortedArray"
+	"./Daily algorithms in Go/RemoveElement"
 	"./Daily algorithms in Go/Richest Customer Wealth"
 	"./Daily algorithms in Go/RunLengthEncoding"
 	"./Daily algorithms in Go/RunningSumOfIDArray"
+	"./Daily algorithms in Go/Sliding Window Technique"
 	"./Daily algorithms in Go/TwoNumberSums"
 	"./Daily algorithms in Go/caeser cipher encryptor"
 	"./file reader"
@@ -19,15 +26,20 @@ use (
 	"./open source/soft"
 	./Algorithms
 	./ReadAndWriteFromJson
+	./array_toolbox
 	./arrays
 	./card
 	./channels
 	./channels-2
 	./cli
+	./daemons
 	./even_odd
+	./go-jwt
 	./go-server
+	./go-stripe
 	./guessing_game
 	./hello-world
+	./hello-world-2
 	./http
 	./interface
 	./interfaces-2
@@ -35,11 +47,16 @@ use (
 	./modules
 	./pointers
 	./pomodoro-go-cli
+	./products-api
 	./strings
 	./structs
 	./structs-2
 	./task-api
+	./tcp
 	./test-api
+	./test-hello-world
+	./twitter-cli
+	./uno
 	./web-development
 	./web-service-gin
 	./writing_go_test

@@ -14,7 +14,7 @@ import (
 var a App
 
 func TestMain(m *testing.M) {
-	a.Initialize()
+	a.Initialize(host, user, password, dbname, port)
 	ensureTableExists()
 	code := m.Run()
 	clearTable()
@@ -28,10 +28,12 @@ func TestEmptytable(t *testing.T) {
 
 	response := executeRequest(req)
 
-	checkResponseStatus(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	t.Errorf("%v", response.Body)
 
 	if body := response.Body.String(); body != "[]" {
-		t.Errorf("Expected an empty array.Got %s", body)
+		t.Errorf("Expected an empty array. Got %s", body)
 	}
 }
 
@@ -42,7 +44,7 @@ func TestGetNonExistentProduct(t *testing.T) {
 
 	response := executeRequest(req)
 
-	checkResponseStatus(t, http.StatusNotFound, response.Code)
+	checkResponseCode(t, http.StatusNotFound, response.Code)
 
 	var m map[string]string
 
@@ -58,13 +60,13 @@ func TestCreateProduct(t *testing.T) {
 
 	var jsonStr = []byte(`{"name":"Test Product", "price":11.99}`)
 
-	req, _ := http.NewRequest(http.MethodPost, "/products", bytes.NewBuffer(jsonStr))
+	req, _ := http.NewRequest(http.MethodPost, "/product", bytes.NewBuffer(jsonStr))
 
 	req.Header.Set("Content-Type", "application/json")
 
 	response := executeRequest(req)
 
-	checkResponseStatus(t, http.StatusCreated, response.Code)
+	checkResponseCode(t, http.StatusCreated, response.Code)
 
 	var m map[string]interface{}
 
@@ -74,7 +76,7 @@ func TestCreateProduct(t *testing.T) {
 		t.Errorf("Expected product name to be 'Test Product'. Got %v", m["name"])
 	}
 
-	if m["price"] != "11.99" {
+	if m["price"] != 11.99 {
 		t.Errorf("Expected price to be '11.99'. Got %v", m["price"])
 	}
 
@@ -91,7 +93,7 @@ func TestGetProduct(t *testing.T) {
 
 	response := executeRequest(req)
 
-	checkResponseStatus(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, response.Code)
 
 }
 
@@ -104,7 +106,7 @@ func TestUpdateProduct(t *testing.T) {
 	var originalProduct map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &originalProduct)
 
-	var jsonStr = []byte(`{"name":"test product - updated name", "price":11.22}`)
+	var jsonStr = []byte(`{"name":"test product - updated name", "price":11.99}`)
 
 	req, _ = http.NewRequest(http.MethodPut, "/product/1", bytes.NewBuffer(jsonStr))
 
@@ -112,7 +114,7 @@ func TestUpdateProduct(t *testing.T) {
 
 	response = executeRequest(req)
 
-	checkResponseStatus(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, response.Code)
 
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
@@ -137,15 +139,15 @@ func TestDeleteProduct(t *testing.T) {
 
 	req, _ := http.NewRequest(http.MethodDelete, "/product/1", nil)
 	response := executeRequest(req)
-	checkResponseStatus(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, response.Code)
 
 	req, _ = http.NewRequest(http.MethodDelete, "/product/1", nil)
 	response = executeRequest(req)
-	checkResponseStatus(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, response.Code)
 
 	req, _ = http.NewRequest(http.MethodGet, "/product/1", nil)
 	response = executeRequest(req)
-	checkResponseStatus(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, response.Code)
 }
 
 func executeRequest(r *http.Request) *httptest.ResponseRecorder {
@@ -155,7 +157,7 @@ func executeRequest(r *http.Request) *httptest.ResponseRecorder {
 	return rr
 }
 
-func checkResponseStatus(t *testing.T, expected, actual int) {
+func checkResponseCode(t *testing.T, expected, actual int) {
 	if expected != actual {
 		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
 	}
@@ -186,6 +188,6 @@ func addProducts(count int) {
 	}
 
 	for i := 0; i < count; i++ {
-		a.DB.Exec("INSERT INTO products(name,price) VALUE ($1,$2)", "Product "+strconv.Itoa(1), (i+1.0)*10)
+		a.DB.Exec("INSERT INTO products(name,price) VALUE ($1,$2)", "Product "+strconv.Itoa(i), (i+1.0)*10)
 	}
 }
