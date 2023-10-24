@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/Daniel-Sogbey/hello-world/pkg/config"
-	"github.com/Daniel-Sogbey/hello-world/pkg/handlers"
+	"github.com/Daniel-Sogbey/hello-world/internal/config"
+	"github.com/Daniel-Sogbey/hello-world/internal/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -24,11 +24,12 @@ func routes(app *config.AppConfig) http.Handler {
 
 	mux.Get("/search-availability", handlers.Repo.Availability)
 	mux.Post("/search-availability", handlers.Repo.PostAvailability)
-	mux.Get("/search-availability-json", handlers.Repo.AvailabilityJSON)
+	mux.Post("/search-availability-json", handlers.Repo.AvailabilityJSON)
 
 	mux.Get("/contact", handlers.Repo.Contact)
 
-	mux.Get("/make-reservation", handlers.Repo.MakeReservation)
+	mux.Get("/make-reservation", handlers.Repo.Reservation)
+	mux.Post("/make-reservation", handlers.Repo.PostReservation)
 
 	fileServer := http.FileServer(http.Dir("./static/"))
 

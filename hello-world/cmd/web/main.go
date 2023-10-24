@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Daniel-Sogbey/hello-world/pkg/config"
-	"github.com/Daniel-Sogbey/hello-world/pkg/handlers"
-	"github.com/Daniel-Sogbey/hello-world/pkg/render"
+	"github.com/Daniel-Sogbey/hello-world/internal/config"
+	"github.com/Daniel-Sogbey/hello-world/internal/handlers"
+	"github.com/Daniel-Sogbey/hello-world/internal/render"
 	"github.com/alexedwards/scs/v2"
 )
 

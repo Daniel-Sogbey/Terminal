@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Daniel-Sogbey/hello-world/pkg/config"
-	"github.com/Daniel-Sogbey/hello-world/pkg/models"
-	"github.com/Daniel-Sogbey/hello-world/pkg/render"
+	"github.com/Daniel-Sogbey/hello-world/internal/config"
+	"github.com/Daniel-Sogbey/hello-world/internal/forms"
+	"github.com/Daniel-Sogbey/hello-world/internal/models"
+	"github.com/Daniel-Sogbey/hello-world/internal/render"
 )
 
 // Repository is the repository
@@ -111,6 +112,14 @@ func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
 }
 
-func (m *Repository) MakeReservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
+
+	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+
+// PostReservation - handles the posting of a reservation form
+func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
+
 }
