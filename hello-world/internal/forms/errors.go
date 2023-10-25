@@ -16,3 +16,7 @@ func (e errors) Get(field string) string {
 	}
 	return es[0]
 }
+
+func (e errors) Remove(field string) {
+	delete(e, field)
+}
