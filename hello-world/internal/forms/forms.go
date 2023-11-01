@@ -43,21 +43,18 @@ func (f *Form) Required(fields ...string) {
 
 		if strings.TrimSpace(value) == "" {
 			f.Errors.Add(field, "This field cannot be blank")
-		} else {
-			f.Errors.Remove(field)
 		}
 	}
 }
 
 // MinLength - Checks for string minimum length
 func (f *Form) MinLength(field string, length int, r *http.Request) bool {
-	x := r.Form.Get("field")
+	x := r.Form.Get(field)
 
 	if len(x) < length {
 		f.Errors.Add(field, fmt.Sprintf("This field must be at least %d characters long", length))
 		return false
 	}
-	f.Errors.Remove(field)
 	return true
 }
 
