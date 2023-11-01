@@ -1,0 +1,24 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/Daniel-Sogbey/hello-world/internal/config"
+	"github.com/go-chi/chi/v5"
+)
+
+func TestRoutes(t *testing.T) {
+
+	var app config.AppConfig
+
+	mux := routes(&app)
+
+	switch v := mux.(type) {
+	case *chi.Mux:
+		//test passed
+
+	default:
+		t.Errorf("Type is not chi.Mux, type is %t", v)
+	}
+
+}
