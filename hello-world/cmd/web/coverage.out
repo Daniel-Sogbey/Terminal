@@ -1,0 +1,11 @@
+mode: set
+github.com/Daniel-Sogbey/hello-world/cmd/web/main.go:22.13,26.16 2 0
+github.com/Daniel-Sogbey/hello-world/cmd/web/main.go:26.16,28.3 1 0
+github.com/Daniel-Sogbey/hello-world/cmd/web/main.go:30.2,39.16 4 0
+github.com/Daniel-Sogbey/hello-world/cmd/web/main.go:39.16,41.3 1 0
+github.com/Daniel-Sogbey/hello-world/cmd/web/main.go:45.18,62.16 10 1
+github.com/Daniel-Sogbey/hello-world/cmd/web/main.go:62.16,65.3 2 0
+github.com/Daniel-Sogbey/hello-world/cmd/web/main.go:67.2,76.12 6 1
+github.com/Daniel-Sogbey/hello-world/cmd/web/middleware.go:17.45,27.2 3 1
+github.com/Daniel-Sogbey/hello-world/cmd/web/middleware.go:30.50,32.2 1 1
+github.com/Daniel-Sogbey/hello-world/cmd/web/routes.go:12.49,40.2 18 1

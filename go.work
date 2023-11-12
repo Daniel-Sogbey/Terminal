@@ -26,6 +26,7 @@ use (
 	"./open source/soft"
 	./Algorithms
 	./ReadAndWriteFromJson
+	./api
 	./array_toolbox
 	./arrays
 	./card
@@ -33,6 +34,8 @@ use (
 	./channels-2
 	./cli
 	./daemons
+	./davi
+	./db-rest
 	./even_odd
 	./go-jwt
 	./go-server
@@ -43,11 +46,15 @@ use (
 	./http
 	./interface
 	./interfaces-2
+	./json-server
 	./map
 	./modules
+	./myrestapi
 	./pointers
 	./pomodoro-go-cli
 	./products-api
+	./rest
+	./short_it
 	./strings
 	./structs
 	./structs-2
