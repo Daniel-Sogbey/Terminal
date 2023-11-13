@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -27,18 +26,24 @@ func (u *User) InsertUser() (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
 	defer cancel()
 
+	user, _ := u.GetUserByUsername()
+
+	if user != nil {
+		return 0, errors.New("user with this username already exist")
+	}
+
 	stmt := `insert into users (username, password, token, token_expiry, created_at, updated_at) values ($1,$2,$3,$4,$5,$6) returning id`
 
 	hashedPassword, err := hashPassword(u.Password)
 
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
 	tokenString, err := generateToken(*u)
 
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
 	token_expiry := time.Now().Add(time.Minute * 10)
@@ -50,10 +55,6 @@ func (u *User) InsertUser() (int, error) {
 	var userID int
 
 	err = db.QueryRowContext(ctx, stmt, u.Username, hashedPassword, tokenString, token_expiry, time.Now(), time.Now()).Scan(&userID)
-
-	if err != nil {
-		return 0, err
-	}
 
 	if err != nil {
 		return 0, err
@@ -115,6 +116,32 @@ func (u *User) GetUserByUsernameAndPassword(plainTextPassword string) (*User, er
 	}
 
 	return &user, nil
+}
+
+func (u *User) GetUserByUsername() (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
+
+	defer cancel()
+
+	query := `select id, username, password, token, token_expiry, created_at, updated_at from users where username = $1`
+
+	var user User
+	err := db.QueryRowContext(ctx, query, u.Username).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.Token,
+		&user.TokenExpiry,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+
 }
 
 // utility functions
