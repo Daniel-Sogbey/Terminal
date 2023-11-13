@@ -2,9 +2,9 @@ package models
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -14,16 +14,20 @@ import (
 var dbTimeOut = time.Second * 5
 
 type User struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	ID          string    `json:"id"`
+	Username    string    `json:"username"`
+	Password    string    `json:"password"`
+	Token       string    `json:"token"`
+	TokenExpiry time.Time `json:"token_expiry"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (u *User) InsertUser() (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
 	defer cancel()
 
-	query := `insert into users (username, password, token, token_expiry, created_at, updated_at) values ($1,$2,$3,$4,$5,$6) returning id`
+	stmt := `insert into users (username, password, token, token_expiry, created_at, updated_at) values ($1,$2,$3,$4,$5,$6) returning id`
 
 	hashedPassword, err := hashPassword(u.Password)
 
@@ -43,15 +47,13 @@ func (u *User) InsertUser() (int, error) {
 		return 0, err
 	}
 
-	row := db.QueryRowContext(ctx, query, u.Username, hashedPassword, tokenString, token_expiry, time.Now(), time.Now())
+	var userID int
+
+	err = db.QueryRowContext(ctx, stmt, u.Username, hashedPassword, tokenString, token_expiry, time.Now(), time.Now()).Scan(&userID)
 
 	if err != nil {
 		return 0, err
 	}
-
-	var userID int
-
-	err = row.Scan(&userID)
 
 	if err != nil {
 		return 0, err
@@ -60,6 +62,62 @@ func (u *User) InsertUser() (int, error) {
 	return userID, nil
 }
 
+func (u *User) GetUserByID(id int) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
+	defer cancel()
+
+	query := `select id, username, password, token, token_expiry, created_at, updated_at from users where id = $1`
+
+	var user User
+
+	err := db.QueryRowContext(ctx, query, id).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.Token,
+		&user.TokenExpiry,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (u *User) GetUserByUsernameAndPassword(plainTextPassword string) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
+
+	defer cancel()
+
+	query := `select id,username,password,token,token_expiry,created_at,updated_at from users where username = $1`
+
+	var user User
+
+	err := db.QueryRowContext(ctx, query, u.Username).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.Token,
+		&user.TokenExpiry,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if ok := comparePasswordWithHash(user, plainTextPassword); !ok {
+		return nil, errors.New("invalid username or password")
+	}
+
+	return &user, nil
+}
+
+// utility functions
 func hashPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 
@@ -70,14 +128,27 @@ func hashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func generateToken(user User) (string, error) {
-	token := jwt.New(jwt.SigningMethodEdDSA)
-	// claims := token.Claims.(jwt.MapClaims)
-	// claims["exp"] = time.Now().Add(time.Minute * 10)
-	// claims["authorized"] = true
-	// claims["user"] = user.Username
+func comparePasswordWithHash(user User, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
-	tokenString, err := token.SignedString(os.Getenv("JWT_SECRET"))
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+func generateToken(user User) (string, error) {
+	claims := jwt.MapClaims{
+		"exp":        time.Now().Add(time.Minute * 10),
+		"authorized": true,
+		"user":       user.Username}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	fmt.Println([]byte("mysecret"))
+
+	tokenString, err := token.SignedString([]byte("mysecret"))
 
 	fmt.Println(tokenString)
 
