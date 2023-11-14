@@ -93,11 +93,26 @@ func (u *User) GetUserByUsernameAndPassword(plainTextPassword string) (*User, er
 
 	defer cancel()
 
+	token, err := generateToken(*u)
+	token_expiry := time.Now().Add(time.Second * 10)
+
+	if err != nil {
+		return nil, err
+	}
+
+	stmt := `update users set token= $1, token_expiry = $2 where id= $3`
+
+	_, err = db.ExecContext(ctx, stmt, token, token_expiry, u.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
 	query := `select id,username,password,token,token_expiry,created_at,updated_at from users where username = $1`
 
 	var user User
 
-	err := db.QueryRowContext(ctx, query, u.Username).Scan(
+	err = db.QueryRowContext(ctx, query, u.Username).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Password,

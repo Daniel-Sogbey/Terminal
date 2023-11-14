@@ -12,6 +12,7 @@ func SetRoutes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Get("/signup", handlers.Signup)
+	mux.Get("/login", handlers.Login)
 
 	return mux
 }
