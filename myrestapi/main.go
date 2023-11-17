@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/Daniel-Sogbey/myrestapi/models"
 	"github.com/Daniel-Sogbey/myrestapi/routes"
 	"github.com/joho/godotenv"
 )
-
-const post = ":8086"
 
 func main() {
 	err := godotenv.Load()
@@ -28,6 +27,7 @@ func main() {
 }
 
 func serve() error {
+	var post = os.Getenv("PORT")
 	err := models.ConnectDB()
 
 	if err != nil {
@@ -35,7 +35,7 @@ func serve() error {
 	}
 
 	src := &http.Server{
-		Addr:    post,
+		Addr:    fmt.Sprintf(":%s", post),
 		Handler: routes.SetRoutes(),
 	}
 

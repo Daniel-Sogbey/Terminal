@@ -13,8 +13,10 @@ import (
 var dbTimeOut = time.Second * 5
 
 type User struct {
-	ID          string    `json:"id"`
-	Username    string    `json:"username"`
+	ID          int       `json:"id"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	Email       string    `json:"email"`
 	Password    string    `json:"password"`
 	Token       string    `json:"token"`
 	TokenExpiry time.Time `json:"token_expiry"`
@@ -26,13 +28,13 @@ func (u *User) InsertUser() (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
 	defer cancel()
 
-	user, _ := u.GetUserByUsername()
+	user, _ := u.GetUserByEmail()
 
 	if user != nil {
-		return 0, errors.New("user with this username already exist")
+		return 0, errors.New("user with this email already exist")
 	}
 
-	stmt := `insert into users (username, password, token, token_expiry, created_at, updated_at) values ($1,$2,$3,$4,$5,$6) returning id`
+	stmt := `insert into users (first_name, last_name,email, password, token, token_expiry, created_at, updated_at) values ($1,$2,$3,$4,$5,$6,$7, $8) returning id`
 
 	hashedPassword, err := hashPassword(u.Password)
 
@@ -54,7 +56,7 @@ func (u *User) InsertUser() (int, error) {
 
 	var userID int
 
-	err = db.QueryRowContext(ctx, stmt, u.Username, hashedPassword, tokenString, token_expiry, time.Now(), time.Now()).Scan(&userID)
+	err = db.QueryRowContext(ctx, stmt, u.FirstName, u.LastName, u.Email, hashedPassword, tokenString, token_expiry, time.Now(), time.Now()).Scan(&userID)
 
 	if err != nil {
 		return 0, err
@@ -67,13 +69,15 @@ func (u *User) GetUserByID(id int) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
 	defer cancel()
 
-	query := `select id, username, password, token, token_expiry, created_at, updated_at from users where id = $1`
+	query := `select id,first_name, last_name,email, username, password, token, token_expiry, created_at, updated_at from users where id = $1`
 
 	var user User
 
 	err := db.QueryRowContext(ctx, query, id).Scan(
 		&user.ID,
-		&user.Username,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
 		&user.Password,
 		&user.Token,
 		&user.TokenExpiry,
@@ -88,33 +92,35 @@ func (u *User) GetUserByID(id int) (*User, error) {
 	return &user, nil
 }
 
-func (u *User) GetUserByUsernameAndPassword(plainTextPassword string) (*User, error) {
+func (u *User) GetUserByEmailAndPassword(plainTextPassword string) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
 
 	defer cancel()
 
 	token, err := generateToken(*u)
-	token_expiry := time.Now().Add(time.Second * 10)
+	token_expiry := time.Now().Add(time.Minute * 10)
 
 	if err != nil {
 		return nil, err
 	}
 
-	stmt := `update users set token= $1, token_expiry = $2 where id= $3`
+	stmt := `update users set token= $1, token_expiry = $2 where email = $3`
 
-	_, err = db.ExecContext(ctx, stmt, token, token_expiry, u.ID)
+	_, err = db.ExecContext(ctx, stmt, token, token_expiry, u.Email)
 
 	if err != nil {
 		return nil, err
 	}
 
-	query := `select id,username,password,token,token_expiry,created_at,updated_at from users where username = $1`
+	query := `select id, first_name, last_name,email,username,password,token,token_expiry,created_at,updated_at from users where email = $1`
 
 	var user User
 
-	err = db.QueryRowContext(ctx, query, u.Username).Scan(
+	err = db.QueryRowContext(ctx, query, u.Email).Scan(
 		&user.ID,
-		&user.Username,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
 		&user.Password,
 		&user.Token,
 		&user.TokenExpiry,
@@ -133,17 +139,21 @@ func (u *User) GetUserByUsernameAndPassword(plainTextPassword string) (*User, er
 	return &user, nil
 }
 
-func (u *User) GetUserByUsername() (*User, error) {
+func (u *User) GetUserByEmail() (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
+
+	fmt.Println(u)
 
 	defer cancel()
 
-	query := `select id, username, password, token, token_expiry, created_at, updated_at from users where username = $1`
+	query := `select id,first_name, last_name, email, username, password, token, token_expiry, created_at, updated_at from users where email = $1`
 
 	var user User
-	err := db.QueryRowContext(ctx, query, u.Username).Scan(
+	err := db.QueryRowContext(ctx, query, u.Email).Scan(
 		&user.ID,
-		&user.Username,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
 		&user.Password,
 		&user.Token,
 		&user.TokenExpiry,
@@ -159,7 +169,7 @@ func (u *User) GetUserByUsername() (*User, error) {
 
 }
 
-// utility functions
+// user utility functions
 func hashPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 
@@ -184,7 +194,7 @@ func generateToken(user User) (string, error) {
 	claims := jwt.MapClaims{
 		"exp":        time.Now().Add(time.Minute * 10),
 		"authorized": true,
-		"user":       user.Username}
+		"user":       user.ID}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

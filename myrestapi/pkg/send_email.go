@@ -58,7 +58,34 @@ func NewEmailClient() *EmailClient {
 	}
 }
 
-func (ec *EmailClient) SendEmail(er *EmailRequest) (int, error) {
+func (ec *EmailClient) SendEmail(message, to string) (int, error) {
+
+	er := &EmailRequest{
+		Personalization: []Personalization{
+			{
+				To: []Email{
+					{
+						Email: to,
+					},
+				},
+				Subject: message,
+			},
+		},
+		Content: []Content{
+			{
+				Type:  "text/plain",
+				Value: "Hello, From Go Server",
+			},
+		},
+		From: From{
+			Email: "gift.alchemy.developer@gmail.com",
+			Name:  "Daniel",
+		},
+		ReplyTo: ReplyTo{
+			Email: "gift.alchemy.developer@gmail.com",
+			Name:  "Daniel",
+		},
+	}
 
 	fmt.Println("EMAIL CLIENT", ec)
 	fmt.Println("EMAIL REQUEST", er)

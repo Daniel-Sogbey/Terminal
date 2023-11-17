@@ -15,35 +15,8 @@ func TestSendEmail(t *testing.T) {
 
 	ec := NewEmailClient()
 
-	er := &EmailRequest{
-		Personalization: []Personalization{
-			{
-				To: []Email{
-					{
-						Email: "mathematics06physics@gmail.com",
-						Name:  "Daniel",
-					},
-				},
-				Subject: "Hello, World",
-			},
-		},
-		Content: []Content{
-			{
-				Type:  "text/plain",
-				Value: "Hello, From Go Server",
-			},
-		},
-		From: From{
-			Email: "gift.alchemy.developer@gmail.com",
-			Name:  "Daniel",
-		},
-		ReplyTo: ReplyTo{
-			Email: "gift.alchemy.developer@gmail.com",
-			Name:  "Daniel",
-		},
-	}
-
-	statusCode, err := ec.SendEmail(er)
+	
+	statusCode, err := ec.SendEmail("Hello World From Test", "mathematics06physics@gmail.com")
 
 	if statusCode > 300 {
 		t.Errorf("Expected a status code within the 200 range but got %d", statusCode)

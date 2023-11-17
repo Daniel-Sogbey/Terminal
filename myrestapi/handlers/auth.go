@@ -6,12 +6,13 @@ import (
 
 	"github.com/Daniel-Sogbey/myrestapi/helpers"
 	"github.com/Daniel-Sogbey/myrestapi/models"
+	"github.com/Daniel-Sogbey/myrestapi/pkg"
 )
 
 func Signup(w http.ResponseWriter, r *http.Request) {
 	var user *models.User
 
-	err := helpers.ReadJSON(r, user)
+	err := helpers.ReadJSON(r, &user)
 
 	if err != nil {
 		errorResponse := models.ErrorResponse{
@@ -53,6 +54,10 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		Data:    &user,
 	}
 
+	//Send email to newly signed up user
+	ec := pkg.NewEmailClient()
+	ec.SendEmail("Message from email signup", user.Email)
+
 	helpers.WriteJSON(w, response, http.StatusOK)
 }
 
@@ -69,10 +74,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		helpers.WriteErrorJSON(w, r, errorResponse, http.StatusBadRequest)
-
+		return
 	}
 
-	u, err := user.GetUserByUsernameAndPassword(user.Password)
+	u, err := user.GetUserByEmailAndPassword(user.Password)
 
 	if err != nil {
 		errorResponse := &models.ErrorResponse{
@@ -81,6 +86,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		helpers.WriteErrorJSON(w, r, errorResponse, http.StatusBadRequest)
+		return
 	}
 
 	response := &models.DataResponse{
