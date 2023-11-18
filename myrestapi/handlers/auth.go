@@ -31,9 +31,9 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errorResponse := models.ErrorResponse{
 			Status: "failed",
-			Error:  fmt.Sprintf("%v", err),
+			Error:  fmt.Sprintf("%v",err),
 		}
-		helpers.WriteErrorJSON(w, r, errorResponse, http.StatusInternalServerError)
+		helpers.WriteErrorJSON(w, r, errorResponse, http.StatusBadRequest)
 		return
 	}
 
@@ -42,7 +42,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errorResponse := models.ErrorResponse{
 			Status: "failed",
-			Error:  fmt.Sprintf("%v", err),
+			Error:  "Internal server error. Try again in a minute",
 		}
 		helpers.WriteErrorJSON(w, r, errorResponse, http.StatusInternalServerError)
 		return
@@ -70,7 +70,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errorResponse := &models.ErrorResponse{
 			Status: "failed",
-			Error:  fmt.Sprintf("%v", err),
+			Error:  "Internal server error. Try again in a minute",
 		}
 
 		helpers.WriteErrorJSON(w, r, errorResponse, http.StatusBadRequest)
@@ -82,7 +82,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errorResponse := &models.ErrorResponse{
 			Status: "failed",
-			Error:  fmt.Sprintf("%v", err),
+			Error:  "Incorrect user credentials",
 		}
 
 		helpers.WriteErrorJSON(w, r, errorResponse, http.StatusBadRequest)

@@ -34,7 +34,7 @@ func (u *User) InsertUser() (int, error) {
 		return 0, errors.New("user with this email already exist")
 	}
 
-	stmt := `insert into users (first_name, last_name,email, password, token, token_expiry, created_at, updated_at) values ($1,$2,$3,$4,$5,$6,$7, $8) returning id`
+	stmt := `insert into users (first_name, last_name,email, password, token, token_expiry, created_at, updated_at) values ($1,$2,$3,$4,$5,$6,$7,$8) returning id`
 
 	hashedPassword, err := hashPassword(u.Password)
 
@@ -69,7 +69,7 @@ func (u *User) GetUserByID(id int) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeOut)
 	defer cancel()
 
-	query := `select id,first_name, last_name,email, username, password, token, token_expiry, created_at, updated_at from users where id = $1`
+	query := `select id,first_name, last_name,email, password, token, token_expiry, created_at, updated_at from users where id = $1`
 
 	var user User
 
@@ -112,7 +112,7 @@ func (u *User) GetUserByEmailAndPassword(plainTextPassword string) (*User, error
 		return nil, err
 	}
 
-	query := `select id, first_name, last_name,email,username,password,token,token_expiry,created_at,updated_at from users where email = $1`
+	query := `select id, first_name, last_name,email,password,token,token_expiry,created_at,updated_at from users where email = $1`
 
 	var user User
 
@@ -146,7 +146,7 @@ func (u *User) GetUserByEmail() (*User, error) {
 
 	defer cancel()
 
-	query := `select id,first_name, last_name, email, username, password, token, token_expiry, created_at, updated_at from users where email = $1`
+	query := `select id,first_name, last_name, email, password, token, token_expiry, created_at, updated_at from users where email = $1`
 
 	var user User
 	err := db.QueryRowContext(ctx, query, u.Email).Scan(
