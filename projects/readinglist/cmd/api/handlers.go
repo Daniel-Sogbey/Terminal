@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -39,30 +40,18 @@ func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		books := []data.Book{
-			{
-				ID:        1,
-				CreatedAt: time.Now(),
-				Title:     "Echoes in the Darknes",
-				Published: 2019,
-				Pages:     300,
-				Genres:    []string{"Fiction", "Thriller"},
-				Rating:    4.5,
-				Version:   1,
-			},
-			{
-				ID:        1,
-				CreatedAt: time.Now(),
-				Title:     "Echoes in the Darknes",
-				Published: 2019,
-				Pages:     300,
-				Genres:    []string{"Fiction", "Thriller"},
-				Rating:    4.5,
-				Version:   1,
-			},
+		books, err := app.Model.Books.GetAll()
+
+		fmt.Println(books)
+
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
 		}
 
 		if err := app.WriteJSON(w, http.StatusOK, Envelope{"books": books}); err != nil {
+			fmt.Println(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -81,6 +70,19 @@ func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Req
 
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+
+		book := data.Book{
+			Title:     input.Title,
+			Published: input.Published,
+			Pages:     input.Pages,
+			Genres:    input.Genres,
+			Rating:    float32(input.Rating),
+		}
+
+		if err := app.Model.Books.Insert(&book); err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 
@@ -113,15 +115,17 @@ func (app *application) getBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	book := data.Book{
-		ID:        idInt,
-		CreatedAt: time.Now(),
-		Title:     "Echoes in the Darknes",
-		Published: 2019,
-		Pages:     300,
-		Genres:    []string{"Fiction", "Thriller"},
-		Rating:    4.5,
-		Version:   1,
+	book, err := app.Model.Books.Get(idInt)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, errors.New("record not found")):
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		default:
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+
+		}
+		return
 	}
 
 	if err := app.WriteJSON(w, http.StatusOK, Envelope{"book": book}); err != nil {

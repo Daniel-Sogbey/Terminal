@@ -34,7 +34,7 @@ func (b BookModel) Insert(book *Book) error {
 }
 
 // get a single book by id
-func (b BookModel) Get(id int) (*Book, error) {
+func (b BookModel) Get(id int64) (*Book, error) {
 	if id < 1 {
 		return nil, errors.New("record not found")
 	}

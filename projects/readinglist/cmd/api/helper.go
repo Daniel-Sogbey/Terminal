@@ -10,6 +10,7 @@ import (
 type Envelope map[string]interface{}
 
 func (app *application) WriteJSON(w http.ResponseWriter, status int, data Envelope) error {
+
 	js, err := json.MarshalIndent(data, "", "\t")
 
 	if err != nil {
