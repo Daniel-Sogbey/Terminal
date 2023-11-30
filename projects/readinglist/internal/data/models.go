@@ -8,8 +8,6 @@ type Models struct {
 
 func NewModels(db *sql.DB) Models {
 	return Models{
-		Books: BookModel{
-			DB: db,
-		},
+		Books: BookModel{DB: db},
 	}
 }

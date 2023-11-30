@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -54,6 +55,8 @@ func ReadJSON(r *http.Request, data interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("**", data)
 
 	return nil
 

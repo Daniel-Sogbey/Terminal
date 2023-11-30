@@ -12,6 +12,7 @@ func (app *application) routes() *http.ServeMux {
 
 	//PRODUCTS ROUTES
 	mux.HandleFunc("/api/v1/products/add", app.addProduct)
+	mux.HandleFunc("/api/v1/products", app.getAllProducts)
 
 	mux.Handle("/user", &User{})
 

@@ -37,7 +37,7 @@ func main() {
 	//dsn = "postgres://postgres:mysecretpassword@localhost/readinglist?sslmode=disable"
 	flag.Parse()
 
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile|log.Llongfile)
 
 	fmt.Println(cfg)
 

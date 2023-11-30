@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var db *sql.DB
+var DB *sql.DB
 
 func ConnectDB() error {
 	connStr := os.Getenv("DSN")
@@ -25,7 +25,7 @@ func ConnectDB() error {
 		return err
 	}
 
-	db = d
+	DB = d
 
 	log.Println("**** Pinged database successfully ****")
 

@@ -1,4 +1,4 @@
-go 1.21.1
+go 1.21.4
 
 use (
 	"./Build Rest APIs In Go/romanserver"
@@ -24,11 +24,14 @@ use (
 	"./open source/go-paystack-cli"
 	"./open source/gomono"
 	"./open source/soft"
+	.
 	./Algorithms
 	./ReadAndWriteFromJson
 	./api
 	./array_toolbox
 	./arrays
+	./blockchain
+	./blockchain_Practice
 	./card
 	./channels
 	./channels-2
@@ -38,6 +41,7 @@ use (
 	./db-rest
 	./even_odd
 	./go-jwt
+	./go-routines
 	./go-server
 	./go-stripe
 	./guessing_game
@@ -47,14 +51,18 @@ use (
 	./interface
 	./interfaces-2
 	./json-server
+	./lenslock
 	./map
 	./modules
 	./myrestapi
 	./pointers
 	./pomodoro-go-cli
 	./products-api
+	./projects/readinglist
 	./rest
+	./service
 	./short_it
+	./smtp
 	./strings
 	./structs
 	./structs-2

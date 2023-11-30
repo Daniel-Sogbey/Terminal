@@ -83,3 +83,28 @@ func (app *application) addProduct(w http.ResponseWriter, r *http.Request) {
 
 	app.logger.Println(productId)
 }
+
+func (app *application) getAllProducts(w http.ResponseWriter, r *http.Request) {
+
+	products, err := app.Models.Product.GetAll()
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			app.logger.Println("1", err)
+		default:
+			app.logger.Println("2", err)
+			return
+		}
+	}
+
+	if err != nil {
+		app.logger.Println("3", err)
+		return
+	}
+
+	if err := app.WriteJSON(w, products, http.StatusOK); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
+}

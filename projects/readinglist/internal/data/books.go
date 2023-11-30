@@ -25,10 +25,10 @@ type BookModel struct {
 
 // insert a book into the db
 func (b BookModel) Insert(book *Book) error {
-	stmt := `insert into books (title,published, pages, genres, rating) values ($1,$2,$3,$4,$5)
+	stmt := `insert into books (title,published, pages, genres, rating,created_at) values ($1,$2,$3,$4,$5, $6)
 	returning id, created_at, version`
 
-	args := []interface{}{book.Title, book.Published, book.Pages, pq.Array(book.Genres), book.Rating}
+	args := []interface{}{book.Title, book.Published, book.Pages, pq.Array(book.Genres), book.Rating, time.Now()}
 
 	return b.DB.QueryRow(stmt, args...).Scan(&book.ID, &book.CreatedAt, &book.Version)
 }
@@ -39,7 +39,7 @@ func (b BookModel) Get(id int64) (*Book, error) {
 		return nil, errors.New("record not found")
 	}
 
-	query := `select (id,title, published, pages,genres, rating, version,created_at) from books where id = $1`
+	query := `select id,title, published, pages, rating, version,genres,created_at from books where id = $1`
 
 	var book Book
 	err := b.DB.QueryRow(query, id).Scan(
@@ -47,16 +47,16 @@ func (b BookModel) Get(id int64) (*Book, error) {
 		&book.Title,
 		&book.Published,
 		&book.Pages,
-		pq.Array(&book.Genres),
 		&book.Rating,
 		&book.Version,
+		pq.Array(&book.Genres),
 		&book.CreatedAt,
 	)
 
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return nil, errors.New("recod not found")
+			return nil, errors.New("record not found")
 		default:
 			return nil, err
 		}
@@ -75,7 +75,7 @@ func (b *BookModel) Update(book *Book) error {
 	return b.DB.QueryRow(stmt, args...).Scan(&book.Version)
 }
 
-func (b *BookModel) Delete(id int) error {
+func (b *BookModel) Delete(id int64) error {
 	stmt := `delete from books where id = $1`
 
 	results, err := b.DB.Exec(stmt, id)
@@ -119,9 +119,9 @@ func (b *BookModel) GetAll() ([]*Book, error) {
 			&book.Title,
 			&book.Published,
 			&book.Pages,
-			pq.Array(&book.Genres),
 			&book.Rating,
 			&book.Version,
+			pq.Array(&book.Genres),
 			&book.CreatedAt,
 		)
 
