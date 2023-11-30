@@ -7,22 +7,22 @@ import (
 	"net/http"
 )
 
-func Parse(filePath string) (*Template, error) {
+type Template struct {
+	htmlTpl *template.Template
+}
+
+func Parse(filePath string) (Template, error) {
 	tpl, err := template.ParseFiles(filePath)
 
 	if err != nil {
-		return &Template{}, fmt.Errorf("parsing template: %v", err)
+		return Template{}, fmt.Errorf("parsing template: %v", err)
 	}
 
-	t := &Template{
+	t := Template{
 		htmlTpl: tpl,
 	}
 
 	return t, nil
-}
-
-type Template struct {
-	htmlTpl *template.Template
 }
 
 func (t *Template) Execute(w http.ResponseWriter, data interface{}) {
