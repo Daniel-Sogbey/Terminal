@@ -28,8 +28,21 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintf(w, `<h1>Contact Page</h1><p>To get in touch email me at 
-	<a href="mailto:mathematics06physics@gmail.com">mathematics06physics@gmail.com</a></p>`)
+	t, err := template.ParseFiles("templates/contact.gohtml")
+
+	if err != nil {
+		log.Printf("parsing template: %v", err)
+		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
+		return
+	}
+
+	err = t.Execute(w, nil)
+
+	if err != nil {
+		log.Printf("executing template: %v", err)
+		http.Error(w, "There was an error executing the template", http.StatusInternalServerError)
+		return
+	}
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
