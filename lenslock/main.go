@@ -2,18 +2,17 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 
+	"github.com/Daniel-Sogbey/lenslock/views"
 	"github.com/go-chi/chi/v5"
 )
 
 func executeTemplate(w http.ResponseWriter, filePath string) {
 	w.Header().Set("Content-Type", "text/html; charset-utf-8")
-
-	t, err := template.ParseFiles(filePath)
+	t, err := views.Parse(filePath)
 
 	if err != nil {
 		log.Printf("parsing teomplate: %v", err)
@@ -21,13 +20,7 @@ func executeTemplate(w http.ResponseWriter, filePath string) {
 		return
 	}
 
-	err = t.Execute(w, nil)
-
-	if err != nil {
-		log.Printf("executing template: %v", err)
-		http.Error(w, "There was an error executing the template", http.StatusInternalServerError)
-		return
-	}
+	t.Execute(w, nil)
 
 }
 
