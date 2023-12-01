@@ -1,0 +1,25 @@
+{{template "header" .}}
+    <form action="/signup" method="post">
+        <div>
+            <label for="email">Email Address</label>
+            <input name="email" type="email" id="email" placeholder="Email address" 
+            required autocomplete="email">
+        </div>
+
+        <div>
+            <label for="password">Password</label>
+            <input name="password" type="password" id="password" 
+            placeholder="Password" required>
+        </div>
+
+         <div>
+           <button type="submit">Sign up</button>
+        </div>
+        <div>
+            <a href="/signin">Already have an account? Sign in</a>
+            <a href="/reset-password">Forgot password?</a>
+        </div>
+    </form>
+
+
+{{template "footer" .}}

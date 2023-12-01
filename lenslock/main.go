@@ -14,20 +14,24 @@ func main() {
 	r := chi.NewRouter()
 
 	//parse and execute the home template
-	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
+	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "base-layout.gohtml"))
 	r.Get("/", controllers.StaticHandler(tpl))
 
 	//parse and execute the contact template
-	tpl = views.Must(views.ParseFS(templates.FS, "contact.gohtml", "tailwind.gohtml"))
+	tpl = views.Must(views.ParseFS(templates.FS, "contact.gohtml", "base-layout.gohtml"))
 	r.Get("/contact", controllers.StaticHandler(tpl))
 
 	//parse and execute the faq template
-	tpl = views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))
+	tpl = views.Must(views.ParseFS(templates.FS, "faq.gohtml", "base-layout.gohtml"))
 	r.Get("/faq", controllers.FAQ(tpl))
 
-	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	})
+	//parse and execute the signup template
+	tpl = views.Must(views.ParseFS(templates.FS, "signup.gohtml", "base-layout.gohtml"))
+	r.Get("/signup", controllers.StaticHandler(tpl))
+
+	//parse and execute the notfound template
+	tpl = views.Must(views.ParseFS(templates.FS, "notfound.gohtml", "base-layout.gohtml"))
+	r.NotFound(controllers.StaticHandler(tpl))
 
 	fmt.Println("starting the server on :3000")
 
