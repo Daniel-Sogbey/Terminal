@@ -4,6 +4,7 @@ import (
 	"bookings/pkg/config"
 	"bookings/pkg/models"
 	"bookings/pkg/render"
+	"fmt"
 	"net/http"
 )
 
@@ -40,6 +41,12 @@ func NewHandler(r *Respository) {
 
 // Home is the home page handler
 func (m *Respository) Home(w http.ResponseWriter, r *http.Request) {
+	remoteIP := r.RemoteAddr
+
+	fmt.Println("Remote IP", remoteIP)
+
+	m.app.Session.Put(r.Context(), "remote_ip", remoteIP)
+
 	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{})
 }
 
@@ -48,6 +55,14 @@ func (m *Respository) About(w http.ResponseWriter, r *http.Request) {
 
 	stringMap := make(map[string]string)
 	stringMap["test"] = "Hello, again"
+
+	remoteIP := m.app.Session.GetString(r.Context(), "remote_ip")
+
+	fmt.Println("Remote IP 2", remoteIP)
+
+	stringMap["remote_ip"] = remoteIP
+
+	fmt.Println("StringMap", stringMap)
 
 	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{
 		StringMap: stringMap,

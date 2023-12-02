@@ -17,11 +17,11 @@ func NewTemplate(a *config.AppConfig) {
 }
 
 func AddDefaultData(td *models.TemplateData) *models.TemplateData {
-	return &models.TemplateData{
-		IntMap: map[string]int{
-			"amount": 500,
-		},
+	td.IntMap = map[string]int{
+		"amount": 500,
 	}
+	return td
+
 }
 
 func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
@@ -74,11 +74,9 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		return myCache, err
 	}
 
-	for _, page := range pages {
-		log.Println("current page: ", page) // "./templates/home.page.tmpl"
+	for _, page := range pages { // ["./templates/home.page.tmpl"]
 
-		name := filepath.Base(page)
-		log.Println("current page name: ", name) //  "home.page.tmpl"
+		name := filepath.Base(page) //  "home.page.tmpl"
 
 		ts, err := template.New(name).ParseFiles(page)
 
