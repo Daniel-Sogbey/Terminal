@@ -1,0 +1,64 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+<div class="row">
+  <div class="col">
+    <form>
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          aria-describedby="emailHelp"
+          autocomplete="off"
+
+        />
+      </div>
+      <div class="form-group">
+        <label for="amount">Amount</label>
+        <input type="text" class="form-control" id="amount"  name="amount"/>
+      </div>
+
+      <button  type="submit" class="btn btn-dark btn-lg mt-3 mb-3">Pay Merchant</button>
+     
+      </button>
+    </form>
+  </div>
+</div>
+{{ end }}
+
+{{define "js"}}
+<script>
+
+const emailEl = document.getElementById("email")
+const amountEl = document.getElementById("amount")
+const buttonEl = document.querySelector(".btn")
+
+buttonEl.addEventListener("click",(e)=> {
+    e.preventDefault();
+    console.log(emailEl.value)
+    console.log(amountEl.value)
+
+var data = {
+    email:  emailEl.value,
+    amount:parseInt(amountEl.value)
+}
+
+
+fetch("/payment",{
+    method:"post",
+    mode: 'no-cors',
+    body:JSON.stringify(data),
+    headers: {
+        "Content-Type": "application/json"
+    }
+})
+})
+
+
+</script>
+
+{{end}}
