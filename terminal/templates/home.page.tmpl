@@ -37,7 +37,7 @@ const emailEl = document.getElementById("email")
 const amountEl = document.getElementById("amount")
 const buttonEl = document.querySelector(".btn")
 
-buttonEl.addEventListener("click",(e)=> {
+buttonEl.addEventListener("click", async (e)=> {
     e.preventDefault();
     console.log(emailEl.value)
     console.log(amountEl.value)
@@ -48,14 +48,23 @@ var data = {
 }
 
 
-fetch("/payment",{
+var res = await fetch("/initiate-payment",{
     method:"post",
-    mode: 'no-cors',
     body:JSON.stringify(data),
     headers: {
         "Content-Type": "application/json"
     }
 })
+
+var msg =  await res.json()
+
+console.log(msg.data.authorization_url)
+
+if (msg.status){
+    console.log("true")
+    window.location.href = msg.data.authorization_url
+}
+
 })
 
 

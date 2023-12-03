@@ -24,7 +24,7 @@ func routes() http.Handler {
 	))
 
 	mux.Get("/", Home)
-	mux.Post("/payment", Payment)
+	mux.Post("/initiate-payment", InitiatePayment)
 	mux.Get("/success", Success)
 	mux.Get("/failure", Failure)
 

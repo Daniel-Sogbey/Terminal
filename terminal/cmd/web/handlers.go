@@ -7,13 +7,15 @@ import (
 	"net/http"
 	"terminal/pkg/paystack"
 	"terminal/pkg/render"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, "home.page.tmpl")
 }
 
-func Payment(w http.ResponseWriter, r *http.Request) {
+func InitiatePayment(w http.ResponseWriter, r *http.Request) {
 
 	var reqBody *paystack.Payment
 
@@ -34,8 +36,17 @@ func Payment(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Data from Payment Initialization: ", data.Data.AuthorizationUrl)
 
-	http.Redirect(w, r, data.Data.AuthorizationUrl, http.StatusTemporaryRedirect)
+	js, _ := json.Marshal(&data)
 
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(js)
+}
+
+func VerifyPayment(w http.ResponseWriter, r *http.Request) {
+	reference := chi.URLParam(r, "reference")
+
+	fmt.Println("REFERENCE: ", reference)
 }
 
 func Success(w http.ResponseWriter, r *http.Request) {
