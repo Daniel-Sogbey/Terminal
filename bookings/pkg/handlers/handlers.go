@@ -68,3 +68,7 @@ func (m *Respository) About(w http.ResponseWriter, r *http.Request) {
 		StringMap: stringMap,
 	})
 }
+
+func (m *Respository) Index(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, "index.page.tmpl", &models.TemplateData{})
+}
