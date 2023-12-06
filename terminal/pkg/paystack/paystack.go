@@ -80,3 +80,38 @@ func Initialize(p *Payment) (*Response, error) {
 
 	return response, nil
 }
+
+func VerifyTransaction(reference string) (map[string]interface{}, error) {
+	url := fmt.Sprintf("https://api.paystack.co/transaction/verify/%s", reference)
+	client := &http.Client{}
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	req.Header.Set("authorization", "Bearer sk_test_f572197fbc13951b13afafc0d0f6517ed7ec12eb")
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	respBody, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var data map[string]interface{}
+
+	err = json.Unmarshal(respBody, &data)
+
+	return data, nil
+
+}

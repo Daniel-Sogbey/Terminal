@@ -25,6 +25,7 @@ func routes() http.Handler {
 
 	mux.Get("/", Home)
 	mux.Post("/initiate-payment", InitiatePayment)
+	mux.Get("/paystack/callback", VerifyPayment)
 	mux.Get("/success", Success)
 	mux.Get("/failure", Failure)
 

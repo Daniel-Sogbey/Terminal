@@ -48,7 +48,7 @@ var data = {
 }
 
 
-var res = await fetch("/initiate-payment",{
+ fetch("/initiate-payment",{
     method:"post",
     body:JSON.stringify(data),
     headers: {
@@ -56,14 +56,14 @@ var res = await fetch("/initiate-payment",{
     }
 })
 
-var msg =  await res.json()
+// var msg =  await res.json()
 
-console.log(msg.data.authorization_url)
+// console.log(msg.data.authorization_url)
 
-if (msg.status){
-    console.log("true")
-    window.location.href = msg.data.authorization_url
-}
+// if (msg.status){
+//     console.log("true")
+//     window.location.href = msg.data.authorization_url
+// }
 
 })
 

@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"terminal/pkg/paystack"
 	"terminal/pkg/render"
-
-	"github.com/go-chi/chi/v5"
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -36,17 +34,33 @@ func InitiatePayment(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Data from Payment Initialization: ", data.Data.AuthorizationUrl)
 
-	js, _ := json.Marshal(&data)
+	http.Redirect(w, r, data.Data.AuthorizationUrl, http.StatusSeeOther)
+	// js, _ := json.Marshal(&data)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write(js)
 }
 
 func VerifyPayment(w http.ResponseWriter, r *http.Request) {
-	reference := chi.URLParam(r, "reference")
+	log.Println(r.Body)
+	reference := r.URL.Query().Get("reference")
 
 	fmt.Println("REFERENCE: ", reference)
+	data, err := paystack.VerifyTransaction(reference)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	fmt.Println("RESPONSE DATA FROM VERIFICATION : ", data)
+
+	if data["status"] == true {
+		http.Redirect(w, r, "/success", http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/failure", http.StatusSeeOther)
+	}
 }
 
 func Success(w http.ResponseWriter, r *http.Request) {
