@@ -32,6 +32,7 @@ use (
 	./arrays
 	./blockchain
 	./blockchain_Practice
+	./bookings
 	./card
 	./channels
 	./channels-2
@@ -59,6 +60,7 @@ use (
 	./pomodoro-go-cli
 	./products-api
 	./projects/readinglist
+	./reservations
 	./rest
 	./service
 	./short_it
@@ -68,6 +70,7 @@ use (
 	./structs-2
 	./task-api
 	./tcp
+	./terminal
 	./test-api
 	./test-hello-world
 	./twitter-cli

@@ -28,25 +28,7 @@
       href="https://unpkg.com/notie/dist/notie.min.css"
     />
 
-    <style>
-      .my-footer {
-        height: 5em;
-        background: #163b65;
-        margin-top: 1.5em;
-        padding: 1em;
-        text-align: center;
-        color: #fff;
-        font-size: 80%;
-      }
-
-      .room-image {
-        max-width: 50%;
-      }
-
-      .notie-container {
-        box-shadow: none;
-      }
-    </style>
+    <link rel="stylesheet" href="static/css/styles.css" />
   </head>
   <body>
     <!-- NAVBAR -->
@@ -124,6 +106,7 @@
                       name="start"
                       class="form-control"
                       placeholder="Arrival"
+                      autocomplete="off"
                     />
                   </div>
 
@@ -135,6 +118,7 @@
                       name="end"
                       class="form-control"
                       placeholder="Departure"
+                      autocomplete="off"
                     />
                   </div>
                 </div>
@@ -186,10 +170,10 @@
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script>
     <script src="https://unpkg.com/notie"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-      console.log("I am printing from javascript");
-
+      let attention = Prompt();
       (function () {
         "use strict";
         window.addEventListener(
@@ -218,13 +202,53 @@
 
       const button = document.getElementById("colorButton");
       button.addEventListener("click", function () {
-        const myEl = document.getElementById("myParagraph");
-        if (!myEl.classList.contains("redText")) {
-          myEl.classList.add("redText");
-        } else {
-          myEl.classList.remove("redText");
-        }
-        notify(`Signed up successfully`, "warning");
+        let html = `
+    <form
+        id="check-availability"
+        action=""
+        method="post"
+        class="needs-validation"
+        novalidate
+      >
+        <div class="form-row" id="reservation-dates-modal">
+          <div class="col">
+            <div class="form-row" >
+    
+              <div class="col">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="start"
+                  id="start"
+                  placeholder="Arrival"
+                  autocomplete="off"
+                  required
+                  disabled
+                />
+              </div>
+ 
+              <div class="col">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="end"
+                  id="end"
+                  placeholder="Departure"
+                  autocomplete="off"
+                  required
+                  disabled
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+  `;
+
+        attention.custom({
+          msg: html,
+          title: "Choose your date",
+        });
       });
 
       const elem = document.getElementById("reservation-dates");
@@ -237,6 +261,92 @@
           type: msgType,
           text: msg,
         });
+      }
+
+      function notifyModel(title, text, icon, confirmButtonText) {
+        Swal.fire({
+          title: title,
+          html: text,
+          icon: icon,
+          confirmButtonText: confirmButtonText,
+        });
+      }
+
+      function Prompt() {
+        let toast = function (c) {
+          const { msg = "", icon = "success", position = "top-end" } = c;
+          const Toast = Swal.mixin({
+            toast: true,
+            title: msg,
+            icon: icon,
+            position: position,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          }).fire({});
+        };
+
+        let success = function (c) {
+          const { msg = "", title = "", footer = "" } = c;
+          Swal.fire({
+            icon: "success",
+            title: title,
+            text: msg,
+            footer: footer,
+          });
+        };
+
+        let error = function (c) {
+          const { msg = "", title = "", footer = "" } = c;
+          Swal.fire({
+            icon: "error",
+            title: title,
+            text: msg,
+            footer: footer,
+          });
+        };
+
+        async function custom(c, x) {
+          const { msg = "", title = "" } = c;
+
+          const { value: formValues } = await Swal.fire({
+            title: title,
+            html: msg,
+            backdrop: false,
+            focusConfirm: false,
+            showCancelButton: true,
+            willOpen: () => {
+              const el = document.getElementById("reservation-dates-modal");
+              const rp = new DateRangePicker(el, {
+                format: "yyyy-mm-dd",
+              });
+            },
+            didOpen: () => {
+              document.getElementById("start").removeAttribute("disabled");
+              document.getElementById("end").removeAttribute("disabled");
+            },
+            preConfirm: () => {
+              return [
+                document.getElementById("start").value,
+                document.getElementById("end").value,
+              ];
+            },
+          });
+          if (formValues) {
+            Swal.fire(JSON.stringify(formValues));
+          }
+        }
+
+        return {
+          toast,
+          success,
+          error,
+          custom,
+        };
       }
     </script>
   </body>
