@@ -3,11 +3,11 @@ package handlers
 import (
 	"bookings/internals/config"
 	"bookings/internals/forms"
+	"bookings/internals/helpers"
 	"bookings/internals/models"
 	"bookings/internals/render"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -33,11 +33,6 @@ func NewHandler(r *Respository) {
 
 // Home is the home page handler
 func (m *Respository) Home(w http.ResponseWriter, r *http.Request) {
-	remoteIP := r.RemoteAddr
-
-	fmt.Println("Remote IP", remoteIP)
-
-	m.app.Session.Put(r.Context(), "remote_ip", remoteIP)
 
 	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
@@ -97,7 +92,12 @@ func (m *Respository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 		Message: "Available",
 	}
 
-	js, _ := json.Marshal(&jsonResponse)
+	js, err := json.Marshal(&jsonResponse)
+
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -124,7 +124,7 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 
 	if err != nil {
-		log.Println(err)
+		helpers.ServerError(w, err)
 		return
 	}
 
@@ -173,7 +173,7 @@ func (m *Respository) ReservationSummary(w http.ResponseWriter, r *http.Request)
 	reservation, ok := m.app.Session.Get(r.Context(), "reservation").(models.Reservation)
 
 	if !ok {
-		log.Println("could not get reservation out of session")
+		m.app.ErrorLog.Println("could not get reservation out of session")
 		m.app.Session.Put(r.Context(), "error", "Could not get the reservation from sesssion")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return

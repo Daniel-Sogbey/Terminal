@@ -3,6 +3,7 @@ package main
 import (
 	"bookings/internals/config"
 	"bookings/internals/handlers"
+	"bookings/internals/helpers"
 	"bookings/internals/models"
 	"bookings/internals/render"
 	"encoding/gob"
@@ -57,6 +58,8 @@ func main() {
 	handlers.NewHandler(repo)
 
 	render.NewTemplate(&app)
+
+	helpers.NewHelpers(&app)
 
 	fmt.Printf("Starting application on port %s \n", portNumber)
 
