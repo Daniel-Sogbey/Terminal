@@ -1,11 +1,13 @@
 package handlers
 
 import (
-	"bookings/pkg/config"
-	"bookings/pkg/models"
-	"bookings/pkg/render"
+	"bookings/internals/config"
+	"bookings/internals/forms"
+	"bookings/internals/models"
+	"bookings/internals/render"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -94,25 +96,73 @@ func (m *Respository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 }
 
 type jsonResponse struct {
-	OK           bool   `json:"ok"`
-	Availability string `json:"availability"`
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
 }
 
 // AvailabilityJSON handles request for availability and sends json response back
 func (m *Respository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
+
 	jsonResponse := jsonResponse{
-		OK:           true,
-		Availability: "Available",
+		OK:      true,
+		Message: "Available",
 	}
 
 	js, _ := json.Marshal(&jsonResponse)
+
+	w.Header().Set("Content-Type", "application/json")
 
 	w.Write(js)
 }
 
 // Reservation is the reservation page handler
 func (m *Respository) Reservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+	data := make(map[string]interface{})
+
+	data["reservation"] = &models.Reservation{}
+
+	form := forms.New(nil)
+	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		Form: form,
+	})
+}
+
+// PostReservation handles the posting of a reservation form
+func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	reservation := models.Reservation{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
+	}
+
+	form := forms.New(r.PostForm)
+
+	form.Required("first_name", "last_name", "email", "phone")
+
+	if !form.Valid() {
+		data := make(map[string]interface{})
+		data["reservation"] = reservation
+
+		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+
+		return
+	}
+
+	fmt.Println(reservation)
+
+	w.Write([]byte("Reservation received"))
 }
 
 // Contact is the contact page handler
