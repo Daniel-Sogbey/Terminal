@@ -3,10 +3,13 @@ package main
 import (
 	"bookings/internals/config"
 	"bookings/internals/handlers"
+	"bookings/internals/models"
 	"bookings/internals/render"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
@@ -16,10 +19,17 @@ const portNumber = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func main() {
 
+	gob.Register(models.Reservation{})
+
 	app.InProduction = false
+
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime|log.Lshortfile|log.Llongfile)
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile|log.Llongfile)
 
 	session = scs.New()
 	session.Lifetime = time.Hour * 24
@@ -39,6 +49,8 @@ func main() {
 
 	app.TemplateCache = tc
 	app.UseCache = false
+	app.InfoLog = infoLog
+	app.ErrorLog = errorLog
 
 	repo := handlers.NewRepository(&app)
 

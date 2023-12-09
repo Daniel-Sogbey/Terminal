@@ -11,17 +11,6 @@ import (
 	"net/http"
 )
 
-type TemplateData struct {
-	StringMap map[string]string
-	IntMap    map[string]int
-	FloatMap  map[string]float32
-	Data      map[string]interface{}
-	CSRFToken string
-	Flash     string
-	Warning   string
-	Error     string
-}
-
 // Repository type
 type Respository struct {
 	app *config.AppConfig
@@ -117,13 +106,15 @@ func (m *Respository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 
 // Reservation is the reservation page handler
 func (m *Respository) Reservation(w http.ResponseWriter, r *http.Request) {
+	var emptyReservation models.Reservation
 	data := make(map[string]interface{})
 
-	data["reservation"] = &models.Reservation{}
+	data["reservation"] = emptyReservation
 
 	form := forms.New(nil)
 	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 		Form: form,
+		Data: data,
 	})
 }
 
@@ -147,9 +138,15 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	form := forms.New(r.PostForm)
 
 	form.Required("first_name", "last_name", "email", "phone")
+	form.MinLength("first_name", 2)
+	form.MinLength("last_name", 2)
+	form.IsPhone("phone", 10)
+	form.IsEmail("email")
+
+	data := make(map[string]interface{})
 
 	if !form.Valid() {
-		data := make(map[string]interface{})
+
 		data["reservation"] = reservation
 
 		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
@@ -162,7 +159,32 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(reservation)
 
-	w.Write([]byte("Reservation received"))
+	data["reservation"] = reservation
+
+	m.app.Session.Put(r.Context(), "reservation", reservation)
+
+	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
+
+}
+
+// ReservationSummary shows the summary of the reservation
+func (m *Respository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
+
+	reservation, ok := m.app.Session.Get(r.Context(), "reservation").(models.Reservation)
+
+	if !ok {
+		log.Println("could not get reservation out of session")
+		m.app.Session.Put(r.Context(), "error", "Could not get the reservation from sesssion")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	m.app.Session.Remove(r.Context(), "reservation")
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }
 
 // Contact is the contact page handler
