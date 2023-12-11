@@ -1,0 +1,30 @@
+{{template "base" .}}
+
+{{define "css"}}
+
+<style>
+  .success {
+    text-align: center;
+  }
+
+  .success h3 {
+    color: green;
+  }
+
+  .success p {
+    font-size: 13px;
+    font-weight: 400;
+    color: #4c4a4a;
+  }
+</style>
+
+{{ end }}
+
+{{define "content"}}
+<div class="success">
+  <h3>Success</h3>
+  <p>Thank you for donating</p>
+  <p>Payment received successfully</p>
+</div>
+
+{{ end }}

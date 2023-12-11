@@ -1,0 +1,30 @@
+{{template "base" .}}
+
+{{define "css"}}
+
+<style>
+  .failure {
+    text-align: center;
+  }
+
+  .failure h3 {
+    color: crimson;
+  }
+
+  .success p {
+    font-size: 13px;
+    font-weight: 400;
+    color: #4c4a4a;
+  }
+</style>
+
+{{ end }}
+
+{{define "content"}}
+<div class="failure">
+  <h3>Failed</h3>
+  <p>Attempt to donate was not successful</p>
+  <p>Please try again</p>
+</div>
+
+{{ end }}
