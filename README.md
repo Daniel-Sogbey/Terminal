@@ -3,7 +3,14 @@
 # hubtel_code_challenge
 
 #### Showcase
-|                Homepage                |                                        | HomePage 2  |
-|:--------------------------------------:|----------------------------------------|:-----------:|
-| <img src="images/s_k.png" width="300"> || <img src="images/s_q.png" width="300"> |
-|     Simple homepage layout from UI     || Simple homepage layout from UI         |
+|                page 1                  |                                        |               Page 2                   |
+|:--------------------------------------:|----------------------------------------|:--------------------------------------:|
+| <img src="images/s_1.png" width="300"> || <img src="images/s_2.png" width="300"> | 
+|            Payment Form                ||     Paystack checkout form            ||                                       |
+
+
+
+|                page 3                  |                                        |               Page 4                   |
+|:--------------------------------------:|----------------------------------------|:--------------------------------------:|
+| <img src="images/s_3.png" width="300"> || <img src="images/s_4.png" width="300"> | 
+|Paystack payment success                ||     Success webpage                   ||                                       |
