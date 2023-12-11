@@ -135,6 +135,9 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		Phone:     r.Form.Get("phone"),
 	}
 
+	// m.app.InfoLog.Println("POST FORM ", r.PostForm)
+	// m.app.InfoLog.Println("FORM ", r.Form)
+
 	form := forms.New(r.PostForm)
 
 	form.Required("first_name", "last_name", "email", "phone")
