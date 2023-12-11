@@ -66,8 +66,8 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, t string, td *models
 func createTemplateCache(tmpl string) error {
 	//templates
 	templates := []string{
-		fmt.Sprintf("./templates/%s", tmpl),
-		"./templates/base.layout.tmpl",
+		fmt.Sprintf("/templates/%s", tmpl),
+		"/templates/base.layout.tmpl",
 	}
 
 	log.Println("Templates", templates)
