@@ -7,11 +7,12 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 type Payment struct {
 	Email  string `json:"email"`
-	Amount int    `json:"amount"`
+	Amount string `json:"amount"`
 }
 
 type Response struct {
@@ -41,7 +42,7 @@ func Initialize(p *Payment) (*Response, error) {
 
 	req, err := http.NewRequest(http.MethodPost, url, reqBody)
 
-	req.Header.Set("authorization", "Bearer sk_test_f572197fbc13951b13afafc0d0f6517ed7ec12eb")
+	req.Header.Set("authorization", fmt.Sprintf("Bearer %s", os.Getenv("PAYSTACK_SECRET_KEY")))
 	req.Header.Set("content-type", "application/json")
 
 	if err != nil {
@@ -92,7 +93,7 @@ func VerifyTransaction(reference string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	req.Header.Set("authorization", "Bearer sk_test_f572197fbc13951b13afafc0d0f6517ed7ec12eb")
+	req.Header.Set("authorization", fmt.Sprintf("Bearer %s", os.Getenv("PAYSTACK_SECRET_KEY")))
 
 	resp, err := client.Do(req)
 
@@ -111,6 +112,11 @@ func VerifyTransaction(reference string) (map[string]interface{}, error) {
 	var data map[string]interface{}
 
 	err = json.Unmarshal(respBody, &data)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 
 	return data, nil
 

@@ -6,18 +6,26 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"terminal/pkg/models"
+
+	"github.com/justinas/nosurf"
 )
 
 var tc = make(map[string]*template.Template)
 
-func RenderTemplate(w http.ResponseWriter, t string) {
+func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
+	td.CSRFToken = nosurf.Token(r)
+	return td
+}
+
+func RenderTemplate(w http.ResponseWriter, r *http.Request, t string, td *models.TemplateData) {
 	var tmpl *template.Template
 	var err error
 
 	_, _inMap := tc[t]
 
 	if !_inMap {
-		err = createTempalteCache(t)
+		err = createTemplateCache(t)
 
 		if err != nil {
 			log.Println("error creating template cache")
@@ -27,7 +35,7 @@ func RenderTemplate(w http.ResponseWriter, t string) {
 		log.Println("creating template cache")
 	} else {
 		log.Println("using template cache")
-		err = createTempalteCache(t)
+		err = createTemplateCache(t)
 
 		if err != nil {
 			log.Println("error creating template cache")
@@ -39,7 +47,9 @@ func RenderTemplate(w http.ResponseWriter, t string) {
 
 	buf := new(bytes.Buffer)
 
-	err = tmpl.Execute(buf, nil)
+	td = AddDefaultData(td, r)
+
+	err = tmpl.Execute(buf, td)
 
 	if err != nil {
 		log.Fatal(err)
@@ -53,24 +63,24 @@ func RenderTemplate(w http.ResponseWriter, t string) {
 
 }
 
-func createTempalteCache(t string) error {
+func createTemplateCache(tmpl string) error {
 	//templates
 	templates := []string{
-		fmt.Sprintf("./templates/%s", t),
+		fmt.Sprintf("./templates/%s", tmpl),
 		"./templates/base.layout.tmpl",
 	}
 
 	log.Println("Templates", templates)
 
-	ts, err := template.ParseFiles(templates...)
+	t, err := template.ParseFiles(templates...)
 
 	if err != nil {
 		return err
 	}
 
-	tc[t] = ts
+	tc[tmpl] = t
 
-	log.Println("Template SET", tc)
+	log.Println("Template Cache", tc)
 
 	return nil
 }

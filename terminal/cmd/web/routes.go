@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
@@ -22,6 +23,9 @@ func routes() http.Handler {
 			MaxAge:           300,
 		},
 	))
+
+	mux.Use(middleware.Logger)
+	mux.Use(NoSurf)
 
 	mux.Get("/", Home)
 	mux.Post("/initiate-payment", InitiatePayment)

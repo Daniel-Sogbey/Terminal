@@ -1,27 +1,36 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"terminal/pkg/models"
 	"terminal/pkg/paystack"
 	"terminal/pkg/render"
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.tmpl")
+	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
 func InitiatePayment(w http.ResponseWriter, r *http.Request) {
-
-	var reqBody *paystack.Payment
-
-	err := json.NewDecoder(r.Body).Decode(&reqBody)
+	err := r.ParseForm()
 
 	if err != nil {
 		log.Println(err)
 		return
+	}
+
+	amount, _ := strconv.ParseFloat(r.Form.Get("amount"), 64)
+
+	amount *= 100
+
+	amountStr := strconv.FormatFloat(amount, 'f', -1, 64)
+
+	reqBody := &paystack.Payment{
+		Email:  r.Form.Get("email"),
+		Amount: amountStr,
 	}
 
 	log.Println("REQUEST BODY : ", reqBody)
@@ -34,12 +43,12 @@ func InitiatePayment(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Data from Payment Initialization: ", data.Data.AuthorizationUrl)
 
-	// http.Redirect(w, r, data.Data.AuthorizationUrl, http.StatusSeeOther)
-	js, _ := json.Marshal(&data)
+	http.Redirect(w, r, data.Data.AuthorizationUrl, http.StatusSeeOther)
+	// js, _ := json.Marshal(&data)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write(js)
 }
 
 func VerifyPayment(w http.ResponseWriter, r *http.Request) {
@@ -64,9 +73,9 @@ func VerifyPayment(w http.ResponseWriter, r *http.Request) {
 }
 
 func Success(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "success.page.tmpl")
+	render.RenderTemplate(w, r, "success.page.tmpl", &models.TemplateData{})
 }
 
 func Failure(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "failure.page.tmpl")
+	render.RenderTemplate(w, r, "failure.page.tmpl", &models.TemplateData{})
 }
