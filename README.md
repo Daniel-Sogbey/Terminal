@@ -1,4 +1,7 @@
-# terminal
+# Terminal
+### PSP - Paystack
+
+#### This approach also apply to almost all payment service providers.
 
 #### Showcase
 |                page 1                  |                                        |               Page 2                   |
