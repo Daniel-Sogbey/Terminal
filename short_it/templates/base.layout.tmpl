@@ -1,0 +1,29 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Short_it</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/styles.css" />
+    {{block "css" .}}
+
+    {{
+      end
+    }}
+  </head>
+  <body>
+    <h1>Short It Home Page</h1>
+    {{block "content" .}}
+    {{ end }}
+
+    {{block "js" .}}
+
+    {{ end }}
+    <footer>
+      <p>@2023</p>
+    </footer>
+  </body>
+</html>
+
+{{ end }}

@@ -1,0 +1,77 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+<div class="row">
+  <div class="col">
+    <form action="/initiate-payment" method="post">
+      <div class="form-group">
+        <input
+          type="text"
+          class="form-control"
+          name="csrf_token"
+          value="{{.CSRFToken}}"
+        />
+      </div>
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          aria-describedby="emailHelp"
+          autocomplete="off"
+        />
+      </div>
+      <div class="form-group">
+        <label for="amount">Amount</label>
+        <input type="text" class="form-control" id="amount" name="amount" />
+      </div>
+
+      <button type="submit" class="btn btn-dark btn-lg mt-3 mb-3">
+        Pay Merchant
+      </button>
+    </form>
+  </div>
+</div>
+{{ end }}
+
+{{define "js"}}
+<!-- <script>
+  const emailEl = document.getElementById("email");
+  const amountEl = document.getElementById("amount");
+  const buttonEl = document.querySelector(".btn");
+
+  buttonEl.addEventListener("click", async (e) => {
+    e.preventDefault();
+    console.log(emailEl.value);
+    console.log(amountEl.value);
+
+    var data = {
+      email: emailEl.value,
+      amount: parseInt(amountEl.value),
+    };
+
+    var res = await fetch("/initiate-payment", {
+      method: "post",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log(res);
+
+    var msg = await res.json();
+
+    console.log(msg.data.authorization_url);
+
+    if (msg.status) {
+      console.log("true");
+      window.location.href = msg.data.authorization_url;
+    }
+  });
+</script> -->
+
+{{ end }}

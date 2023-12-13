@@ -1,0 +1,21 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+<p>Add product page</p>
+
+<form action="/add-product" method="post">
+  <input type="text" name="csrf_token" value="{{.CSRFToken}}" />
+  <input type="text" name="name" placeholder="name" autocomplete="off" />
+  <input type="text" name="price" placeholder="price" autocomplete="off" />
+  <textarea name="description">Description</textarea>
+  <input
+    type="text"
+    name="quantity"
+    placeholder="quantity"
+    autocomplete="off"
+  />
+  <button type="submit">Add Product</button>
+</form>
+
+{{ end }}
