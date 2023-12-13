@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Daniel-Sogbey/db-rest/internal/db"
+	"github.com/Daniel-Sogbey/db-rest/internals/db"
 )
 
 const port = ":9090"

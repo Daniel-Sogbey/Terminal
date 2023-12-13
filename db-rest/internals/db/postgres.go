@@ -12,15 +12,15 @@ var db *sql.DB
 
 var (
 	username = "dansogbey"
-	password = "    "
+	password = ""
 	host     = "localhost"
 	port     = 5432
 	dbName   = "testdb"
+	sslmode  = "disable"
 )
 
 func InitDB() {
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", username, password, host, port, dbName)
-	// connStr := "postgres://twizefis:3ncgi1sHvXZprRcBAynv5TOkbUBkWpkK@suleiman.db.elephantsql.com/twizefis"
+	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", host, port, username, password, dbName, sslmode)
 	var err error
 
 	db, err = sql.Open("postgres", connStr)
@@ -28,6 +28,12 @@ func InitDB() {
 	if err != nil {
 		log.Fatalf("Failed to open a connection to db, Error : %v", err)
 		return
+	}
+
+	err = db.Ping()
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	fmt.Println("DB connected successfully")
