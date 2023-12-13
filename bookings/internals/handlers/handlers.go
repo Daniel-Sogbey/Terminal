@@ -12,6 +12,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 // Repository type
@@ -38,9 +40,7 @@ func NewHandler(r *Respository) {
 
 // Home is the home page handler
 func (m *Respository) Home(w http.ResponseWriter, r *http.Request) {
-	m.DB.AllUsers()
-
-	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
 // About is the about page handler
@@ -57,24 +57,24 @@ func (m *Respository) About(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("StringMap", stringMap)
 
-	render.RenderTemplate(w, r, "about.page.tmpl", &models.TemplateData{
+	render.Template(w, r, "about.page.tmpl", &models.TemplateData{
 		StringMap: stringMap,
 	})
 }
 
 // Generals is the generals page handler
 func (m *Respository) Generals(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "generals.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "generals.page.tmpl", &models.TemplateData{})
 }
 
 // Majors is the majors page handler
 func (m *Respository) Majors(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "majors.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "majors.page.tmpl", &models.TemplateData{})
 }
 
 // Availability is the availability page handler
 func (m *Respository) Availability(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "search-availability.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "search-availability.page.tmpl", &models.TemplateData{})
 }
 
 // PostAvailability is the post availability page handler
@@ -118,7 +118,7 @@ func (m *Respository) Reservation(w http.ResponseWriter, r *http.Request) {
 	data["reservation"] = emptyReservation
 
 	form := forms.New(nil)
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+	render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 		Form: form,
 		Data: data,
 	})
@@ -134,11 +134,36 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// date layout 01-02-2006
+
+	sd := r.Form.Get("start_date")
+	ed := r.Form.Get("end_date")
+	roomId, err := strconv.Atoi(r.Form.Get("room_id"))
+
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	layout := "01-02-2006"
+	startDate, err := time.Parse(layout, sd)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	endDate, err := time.Parse(layout, ed)
+
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
 	reservation := models.Reservation{
 		FirstName: r.Form.Get("first_name"),
 		LastName:  r.Form.Get("last_name"),
 		Email:     r.Form.Get("email"),
 		Phone:     r.Form.Get("phone"),
+		StartDate: startDate,
+		EndDate:   endDate,
+		RoomID:    roomId,
 	}
 
 	// m.app.InfoLog.Println("POST FORM ", r.PostForm)
@@ -158,7 +183,7 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 		data["reservation"] = reservation
 
-		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 			Form: form,
 			Data: data,
 		})
@@ -169,6 +194,12 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(reservation)
 
 	data["reservation"] = reservation
+
+	err = m.DB.InsertReservation(&reservation)
+
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
 
 	m.app.Session.Put(r.Context(), "reservation", reservation)
 	m.app.Session.Put(r.Context(), "flash", "Reservation submitted successfully")
@@ -192,12 +223,12 @@ func (m *Respository) ReservationSummary(w http.ResponseWriter, r *http.Request)
 	data := make(map[string]interface{})
 	data["reservation"] = reservation
 
-	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
+	render.Template(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
 }
 
 // Contact is the contact page handler
 func (m *Respository) Contact(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "contact.page.tmpl", &models.TemplateData{})
 }

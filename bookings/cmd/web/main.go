@@ -36,6 +36,10 @@ var errorLog *log.Logger
 func main() {
 
 	gob.Register(models.Reservation{})
+	gob.Register(models.Restriction{})
+	gob.Register(models.RoomRestriction{})
+	gob.Register(models.Room{})
+	gob.Register(models.User{})
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=%s dbname=%s", host, port, user, password, sslmode, dbname)
 
@@ -79,7 +83,7 @@ func main() {
 
 	handlers.NewHandler(repo)
 
-	render.NewTemplate(&app)
+	render.NewRenderer(&app)
 
 	helpers.NewHelpers(&app)
 
