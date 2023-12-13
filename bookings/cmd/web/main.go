@@ -2,6 +2,7 @@ package main
 
 import (
 	"bookings/internals/config"
+	"bookings/internals/driver"
 	"bookings/internals/handlers"
 	"bookings/internals/helpers"
 	"bookings/internals/models"
@@ -18,6 +19,15 @@ import (
 
 const portNumber = ":8080"
 
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "dansogbey"
+	password = ""
+	sslmode  = "disable"
+	dbname   = "bookings"
+)
+
 var app config.AppConfig
 var session *scs.SessionManager
 var infoLog *log.Logger
@@ -26,6 +36,8 @@ var errorLog *log.Logger
 func main() {
 
 	gob.Register(models.Reservation{})
+
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=%s dbname=%s", host, port, user, password, sslmode, dbname)
 
 	app.InProduction = false
 
@@ -53,7 +65,17 @@ func main() {
 	app.InfoLog = infoLog
 	app.ErrorLog = errorLog
 
-	repo := handlers.NewRepository(&app)
+	db, err := driver.ConnectSQL(dsn)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	app.InfoLog.Println("Connected to database successfully")
+
+	db.SQL.Close()
+
+	repo := handlers.NewRepository(&app, db)
 
 	handlers.NewHandler(repo)
 

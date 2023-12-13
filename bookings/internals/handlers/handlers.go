@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"bookings/internals/config"
+	"bookings/internals/driver"
 	"bookings/internals/forms"
 	"bookings/internals/helpers"
 	"bookings/internals/models"
 	"bookings/internals/render"
+	"bookings/internals/repository"
+	"bookings/internals/repository/dbrepo"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,15 +17,17 @@ import (
 // Repository type
 type Respository struct {
 	app *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
 // Repo the repository used by the handlers
 var Repo *Respository
 
 // NewRepository creates a new repository
-func NewRepository(a *config.AppConfig) *Respository {
+func NewRepository(a *config.AppConfig, db *driver.DB) *Respository {
 	return &Respository{
 		app: a,
+		DB:  dbrepo.NewPostgresRepo(a, db.SQL),
 	}
 }
 
@@ -33,6 +38,7 @@ func NewHandler(r *Respository) {
 
 // Home is the home page handler
 func (m *Respository) Home(w http.ResponseWriter, r *http.Request) {
+	m.DB.AllUsers()
 
 	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
@@ -165,6 +171,7 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	data["reservation"] = reservation
 
 	m.app.Session.Put(r.Context(), "reservation", reservation)
+	m.app.Session.Put(r.Context(), "flash", "Reservation submitted successfully")
 
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
 
