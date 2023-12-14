@@ -16,7 +16,7 @@ type DB struct {
 var dbConn = &DB{}
 
 const maxOpenDbConn = 10
-const maxIdleDbConn = 5
+const maxIdleDbConn = 5 * time.Minute
 const maxDbLifetime = 5 * time.Minute
 
 // ConnectSQL creates database pool for postgres

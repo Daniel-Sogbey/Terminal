@@ -77,7 +77,7 @@ func main() {
 
 	app.InfoLog.Println("Connected to database successfully")
 
-	db.SQL.Close()
+	defer db.SQL.Close()
 
 	repo := handlers.NewRepository(&app, db)
 

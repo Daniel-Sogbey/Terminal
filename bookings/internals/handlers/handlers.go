@@ -144,7 +144,7 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 	}
 
-	layout := "01-02-2006"
+	layout := "2006-01-02"
 	startDate, err := time.Parse(layout, sd)
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -195,10 +195,26 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	data["reservation"] = reservation
 
-	err = m.DB.InsertReservation(&reservation)
+	newReservationID, err := m.DB.InsertReservation(&reservation)
 
 	if err != nil {
 		helpers.ServerError(w, err)
+		return
+	}
+
+	restriction := models.RoomRestriction{
+		StartDate:     startDate,
+		EndDate:       endDate,
+		RoomID:        roomId,
+		ReservationID: newReservationID,
+		RestrictionID: 1,
+	}
+
+	err = m.DB.InsertRoomRestriction(restriction)
+
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
 	}
 
 	m.app.Session.Put(r.Context(), "reservation", reservation)
