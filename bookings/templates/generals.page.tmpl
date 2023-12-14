@@ -87,6 +87,7 @@
         const rp = new DateRangePicker(el, {
           format: "yyyy-mm-dd",
           showOnFocus: true,
+          minDate: new Date(),
         });
       },
       preConfirm: () => {
@@ -104,6 +105,8 @@
         let form = document.getElementById("check-availability-form");
         let formData = new FormData(form);
         formData.append("csrf_token", "{{.CSRFToken}}");
+        formData.append("room_id", "1");
+
         console.log("FORM : ", form);
         console.log("FORMDATA : ", formData);
 
