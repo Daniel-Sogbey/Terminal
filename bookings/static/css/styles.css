@@ -17,10 +17,16 @@
 }
 
 .form-row {
-    border: 1px solid red;
-    margin: 10px;
+    /* border: 1px solid red;
+    margin: 10px; */
 }
 
 .datepicker {
     z-index: 10000;
+}
+
+.datepicker-dropdown {
+    padding-top: 4px;
+    position: static;
+    z-index: 1000;
 }

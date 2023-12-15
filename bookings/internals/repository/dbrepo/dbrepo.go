@@ -7,13 +7,13 @@ import (
 )
 
 type postgresDBRepo struct {
-	App *config.AppConfig
+	app *config.AppConfig
 	DB  *sql.DB
 }
 
 func NewPostgresRepo(a *config.AppConfig, conn *sql.DB) repository.DatabaseRepo {
 	return &postgresDBRepo{
-		App: a,
+		app: a,
 		DB:  conn,
 	}
 }

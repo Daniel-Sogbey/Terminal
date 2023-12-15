@@ -143,8 +143,11 @@ func (m *Respository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 }
 
 type jsonResponse struct {
-	OK      bool   `json:"ok"`
-	Message string `json:"message"`
+	OK        bool   `json:"ok"`
+	Message   string `json:"message"`
+	RoomID    string `json:"room_id"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
 }
 
 // AvailabilityJSON handles request for availability and sends json response back
@@ -158,11 +161,21 @@ func (m *Respository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 
 	roomID, _ := strconv.Atoi(r.Form.Get("room_id"))
 
-	available, _ := m.DB.SearchAvailabilityByDatesByRoomID(start, endDate, roomID)
+	m.app.InfoLog.Println(sd, ed, roomID)
+
+	available, err := m.DB.SearchAvailabilityByDatesByRoomID(start, endDate, roomID)
+
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 
 	jsonResponse := jsonResponse{
-		OK:      available,
-		Message: "",
+		OK:        available,
+		Message:   "",
+		StartDate: sd,
+		EndDate:   ed,
+		RoomID:    strconv.Itoa(roomID),
 	}
 
 	js, err := json.Marshal(&jsonResponse)
@@ -357,4 +370,36 @@ func (m *Respository) ChooseRoom(w http.ResponseWriter, r *http.Request) {
 	m.app.Session.Put(r.Context(), "reservation", res)
 
 	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
+}
+
+// BookRoom takes url parameters , builds a sessional variable and takes users to make reservation screen
+func (m *Respository) BookRoom(w http.ResponseWriter, r *http.Request) {
+	//id,s,e
+
+	roomID, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	sd := r.URL.Query().Get("s")
+	ed := r.URL.Query().Get("e")
+
+	startDate, _ := time.Parse(layout, sd)
+	endDate, _ := time.Parse(layout, ed)
+
+	room, err := m.DB.GetRoomById(roomID)
+
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	var res models.Reservation
+
+	res.RoomID = roomID
+	res.StartDate = startDate
+	res.EndDate = endDate
+	res.Room.RoomName = room.RoomName
+
+	m.app.Session.Put(r.Context(), "reservation", res)
+
+	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
+
+	m.app.InfoLog.Println(roomID, startDate, endDate)
 }
