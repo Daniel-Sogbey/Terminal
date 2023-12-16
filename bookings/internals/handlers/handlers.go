@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -198,14 +199,16 @@ func (m *Respository) Reservation(w http.ResponseWriter, r *http.Request) {
 	res, ok := m.app.Session.Get(r.Context(), "reservation").(models.Reservation)
 
 	if !ok {
-		helpers.ServerError(w, errors.New("cannot get reservation from session"))
+		m.app.Session.Put(r.Context(), "error", "Can't find reservation")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	room, err := m.DB.GetRoomById(res.RoomID)
 
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.app.Session.Put(r.Context(), "error", "Can't find reservation")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -284,7 +287,8 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	newReservationID, err := m.DB.InsertReservation(&reservation)
 
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.app.Session.Put(r.Context(), "error", "Can't find reservation")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -301,11 +305,28 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	err = m.DB.InsertRoomRestriction(restriction)
 
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.app.Session.Put(r.Context(), "error", "Can't find room restriction")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	m.app.Session.Put(r.Context(), "flash", "Reservation submitted successfully")
+
+	htmlMessage := fmt.Sprintf(`
+	<strong>Reservation Confirmations</strong><br>
+	Dear %s;<br>
+	This is to confirm your reservation from %s to %s.
+	`, reservation.FirstName, reservation.StartDate, reservation.EndDate)
+
+	//send notification  - first to guest
+	msg := models.MailData{
+		To:      reservation.Email,
+		From:    "me@here.com",
+		Subject: "Reservation Confirmation",
+		Content: htmlMessage,
+	}
+
+	m.app.MailChan <- msg
 
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
 
@@ -402,4 +423,77 @@ func (m *Respository) BookRoom(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
 
 	m.app.InfoLog.Println(roomID, startDate, endDate)
+}
+
+func (m *Respository) ShowLogin(w http.ResponseWriter, r *http.Request) {
+
+	form := forms.New(nil)
+	stringMap := make(map[string]string)
+
+	stringMap["email"] = ""
+	stringMap["password"] = ""
+
+	render.Template(w, r, "login.page.tmpl", &models.TemplateData{
+		Form:      form,
+		StringMap: stringMap,
+	})
+}
+
+// PostShowLogin handles logging the user in
+func (m *Respository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
+	_ = m.app.Session.RenewToken(r.Context())
+	err := r.ParseForm()
+
+	if err != nil {
+		m.app.ErrorLog.Println(err)
+	}
+
+	form := forms.New(r.PostForm)
+
+	form.Required("email", "password")
+	form.IsEmail("email")
+
+	email := r.Form.Get("email")
+	password := r.Form.Get("password")
+
+	stringMap := make(map[string]string)
+
+	stringMap["email"] = email
+	stringMap["password"] = password
+
+	if !form.Valid() {
+		render.Template(w, r, "login.page.tmpl", &models.TemplateData{
+			Form:      form,
+			StringMap: stringMap,
+		})
+		return
+	}
+
+	id, _, err := m.DB.Authenticate(email, password)
+
+	if err != nil {
+		m.app.ErrorLog.Println("Unable to login", err)
+		m.app.Session.Put(r.Context(), "error", "Invalid login credentials")
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+
+	m.app.Session.Put(r.Context(), "user_id", id)
+	m.app.Session.Put(r.Context(), "flash", "Logged in successfully")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	log.Println(r.Form.Get("email"), r.Form.Get("password"))
+
+}
+
+func (m *Respository) Logout(w http.ResponseWriter, r *http.Request) {
+	m.app.Session.Put(r.Context(), "flash", "Logged out successfully")
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+	// _ = m.app.Session.Destroy(r.Context())
+	// _ = m.app.Session.RenewToken(r.Context())
+}
+
+func (m *Respository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
 }

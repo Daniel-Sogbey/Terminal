@@ -1,0 +1,50 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Login</h1>
+      <form action="/user/login" method="post" novalidate>
+        <!-- EMAIL -->
+
+        <div class="form-group">
+          <label for="csrf_token">CSRFToken</label>
+          <input
+            type="text"
+            class="form-control"
+            name="csrf_token"
+            value="{{.CSRFToken}}"
+          />
+        </div>
+
+        <div class="form-group mt-5">
+          <label for="email">Email</label>
+          {{with .Form.Errors.Get "email"}}
+          <label class="text-danger">{{.}}</label>
+          {{ end }}
+          <input type="text" name="email" id="email" class="form-control
+          {{with .Form.Errors.Get "email" }} is-invalid {{ end }}" required
+          autocomplete="off" value="{{index .StringMap "email"}}" />
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          {{with .Form.Errors.Get "password"}}
+          <label class="text-danger">{{.}}</label>
+          {{ end }}
+          <input type="password" name="password" id="password"
+          class="form-control
+          {{with .Form.Errors.Get "password" }} is-invalid {{ end }}" required
+          autocomplete="off" value="{{index .StringMap "password"}}" />
+        </div>
+
+        <hr />
+
+        <input type="submit" value="Submit" class="btn btn-primary" />
+      </form>
+    </div>
+  </div>
+</div>
+{{ end }}

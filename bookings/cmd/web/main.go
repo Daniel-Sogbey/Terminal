@@ -41,6 +41,11 @@ func main() {
 	gob.Register(models.Room{})
 	gob.Register(models.User{})
 
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
+
+	defer close(app.MailChan)
+
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=%s dbname=%s", host, port, user, password, sslmode, dbname)
 
 	app.InProduction = false
@@ -78,6 +83,17 @@ func main() {
 	app.InfoLog.Println("Connected to database successfully")
 
 	defer db.SQL.Close()
+
+	// listenForMail()
+
+	// msg := models.MailData{
+	// 	To:      "john@doe.com",
+	// 	From:    "me@here.com",
+	// 	Subject: "Some subject",
+	// 	Content: "",
+	// }
+
+	// app.MailChan <- msg
 
 	repo := handlers.NewRepository(&app, db)
 
