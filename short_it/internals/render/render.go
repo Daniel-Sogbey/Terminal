@@ -1,14 +1,15 @@
 package render
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 
-	"github.com/Daniel-Sogbey/short_it/internal/config"
-	"github.com/Daniel-Sogbey/short_it/internal/models"
+	"github.com/Daniel-Sogbey/short_it/internals/config"
+	"github.com/Daniel-Sogbey/short_it/internals/models"
 	"github.com/justinas/nosurf"
 )
 
@@ -24,7 +25,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 }
 
 func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
-	tc := map[string]*template.Template{}
+	var tc map[string]*template.Template
 	var err error
 
 	if app.UseCache {
@@ -44,7 +45,19 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 
 	t := tc[tmpl]
 
-	t.Execute(w, td)
+	buffer := new(bytes.Buffer)
+
+	err = t.Execute(buffer, td)
+
+	if err != nil {
+		app.ErrorLog.Fatal(err)
+	}
+
+	_, err = buffer.WriteTo(w)
+
+	if err != nil {
+		app.ErrorLog.Fatal(err)
+	}
 
 }
 

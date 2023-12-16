@@ -1,15 +1,24 @@
 {{template "base" .}}
 
 {{define "css"}}
-
+<link rel="stylesheet" type="text/css" href="/static/css/home.page.css" />
 {{ end }}
 
 {{define "content"}}
-{{$value := index .Data "url"}}
+{{$value := index .Data "originalUrl"}}
 <form action="/" method="post">
-  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
-  <input type="text" name="url" id="" placeholder="Enter your url" />
-  <>{{ $value }}</p>
+  <input type="text" name="csrf_token" value="{{.CSRFToken}}" />
+  {{with .Form.Errors.Get "url"}}
+  <label class="error">{{.}}</label>
+  {{ end }}
+  <input
+    type="text"
+    name="url"
+    id=""
+    placeholder="Enter your url"
+    value="{{$value.URL}}"
+  />
+  <p>{{ $value.URL }}</p>
   <input type="submit" value="shorten" />
 </form>
 {{ end }}

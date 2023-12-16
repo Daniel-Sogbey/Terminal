@@ -1,0 +1,10 @@
+form {
+   display: flex;
+   flex-direction: column;
+}
+
+.error {
+    color: crimson;
+    font-size: 13px;
+    font-weight: 400;
+}
