@@ -1,0 +1,32 @@
+.my-footer {
+    height: 5em;
+    background: #163b65;
+    margin-top: 1.5em;
+    padding: 1em;
+    text-align: center;
+    color: #fff;
+    font-size: 80%;
+}
+
+.room-image {
+    max-width: 50%;
+}
+
+.notie-container {
+    box-shadow: none;
+}
+
+.form-row {
+    /* border: 1px solid red;
+    margin: 10px; */
+}
+
+.datepicker {
+    z-index: 10000;
+}
+
+.datepicker-dropdown {
+    padding-top: 4px;
+    position: static;
+    z-index: 1000;
+}

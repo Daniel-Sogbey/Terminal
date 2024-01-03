@@ -8,6 +8,7 @@ import (
 	"bookings/internals/models"
 	"bookings/internals/render"
 	"encoding/gob"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,15 +19,6 @@ import (
 )
 
 const portNumber = ":8080"
-
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "dansogbey"
-	password = ""
-	sslmode  = "disable"
-	dbname   = "bookings"
-)
 
 var app config.AppConfig
 var session *scs.SessionManager
@@ -41,14 +33,32 @@ func main() {
 	gob.Register(models.Room{})
 	gob.Register(models.User{})
 
+	//read flags
+	inProduction := flag.Bool("production", true, "Application is in production")
+	useCache := flag.Bool("cache", true, "Use template cache")
+	dbHost := flag.String("dbhost", "localhost", "Database host")
+	dbName := flag.String("dbname", "", "Database name")
+	dbUser := flag.String("dbuser", "", "Database user")
+	dbPass := flag.String("dbpass", "", "Database password")
+	dbPort := flag.String("dbport", "5432", "Database port")
+	dbSSL := flag.String("dbssl", "disable", "Database ssl settings (disable, prefer, require)")
+
+	flag.Parse()
+
+	if *dbName == "" || *dbUser == "" {
+		fmt.Println("Missing required flags")
+		os.Exit(1)
+	}
+
 	mailChan := make(chan models.MailData)
 	app.MailChan = mailChan
 
 	defer close(app.MailChan)
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=%s dbname=%s", host, port, user, password, sslmode, dbname)
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=%s dbname=%s", *dbHost, *dbPort, *dbUser, *dbPass, *dbSSL, *dbName)
 
-	app.InProduction = false
+	app.InProduction = *inProduction
+	app.UseCache = *useCache
 
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime|log.Lshortfile|log.Llongfile)
 	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile|log.Llongfile)
@@ -70,7 +80,6 @@ func main() {
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = false
 	app.InfoLog = infoLog
 	app.ErrorLog = errorLog
 

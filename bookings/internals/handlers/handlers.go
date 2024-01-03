@@ -312,21 +312,21 @@ func (m *Respository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	m.app.Session.Put(r.Context(), "flash", "Reservation submitted successfully")
 
-	htmlMessage := fmt.Sprintf(`
-	<strong>Reservation Confirmations</strong><br>
-	Dear %s;<br>
-	This is to confirm your reservation from %s to %s.
-	`, reservation.FirstName, reservation.StartDate, reservation.EndDate)
+	// htmlMessage := fmt.Sprintf(`
+	// <strong>Reservation Confirmations</strong><br>
+	// Dear %s;<br>
+	// This is to confirm your reservation from %s to %s.
+	// `, reservation.FirstName, reservation.StartDate, reservation.EndDate)
 
 	//send notification  - first to guest
-	msg := models.MailData{
-		To:      reservation.Email,
-		From:    "me@here.com",
-		Subject: "Reservation Confirmation",
-		Content: htmlMessage,
-	}
+	// msg := models.MailData{
+	// 	To:      reservation.Email,
+	// 	From:    "me@here.com",
+	// 	Subject: "Reservation Confirmation",
+	// 	Content: htmlMessage,
+	// }
 
-	m.app.MailChan <- msg
+	// m.app.MailChan <- msg
 
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
 
@@ -483,15 +483,14 @@ func (m *Respository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 
 	log.Println(r.Form.Get("email"), r.Form.Get("password"))
-
 }
 
 func (m *Respository) Logout(w http.ResponseWriter, r *http.Request) {
 	m.app.Session.Put(r.Context(), "flash", "Logged out successfully")
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
-	// _ = m.app.Session.Destroy(r.Context())
-	// _ = m.app.Session.RenewToken(r.Context())
+	_ = m.app.Session.Destroy(r.Context())
+	_ = m.app.Session.RenewToken(r.Context())
 }
 
 func (m *Respository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
