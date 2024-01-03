@@ -1,0 +1,5 @@
+create_table("shorts") {
+  t.Column("id", "int", {primary:true})
+  t.Column("short_url", "string", {})
+  t.Column("original_url_id", "int", {})
+}

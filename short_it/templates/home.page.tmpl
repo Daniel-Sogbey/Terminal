@@ -9,7 +9,7 @@
 <form action="/" method="post">
   <input type="text" name="csrf_token" value="{{.CSRFToken}}" />
   {{with .Form.Errors.Get "url"}}
-  <label class="error">{{.}}</label>
+  <label class="danger">{{.}}</label>
   {{ end }}
   <input
     type="text"

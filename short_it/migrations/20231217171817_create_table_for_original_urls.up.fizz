@@ -1,0 +1,4 @@
+create_table("originals") {
+  t.Column("id", "int", {primary:true})
+  t.Column("original_url", "string", {})
+}

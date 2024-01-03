@@ -1,0 +1,4 @@
+add_foreign_key("shorts", "original_url_id", {"originals":["id"]},{
+    "on_delete":"cascade",
+    "on_update":"cascade",
+})

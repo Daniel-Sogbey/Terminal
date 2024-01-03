@@ -14,14 +14,6 @@ import (
 	"github.com/alexedwards/scs/v2"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "dansogbey"
-	password = ""
-	dbname   = "testdb"
-)
-
 const portNumber = ":8080"
 
 var app config.AppConfig
@@ -30,8 +22,11 @@ var errroLog *log.Logger
 var session *scs.SessionManager
 
 func main() {
+	dsn := fmt.Sprintln("host=localhost port=5432 user=dansogbey password= dbname=shortit sslmode=disable")
 
 	tc, _ := render.CreateTemplateCache()
+
+	fmt.Println(tc)
 
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime|log.Lshortfile|log.Llongfile)
 	errroLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Llongfile|log.Lshortfile)
@@ -52,18 +47,17 @@ func main() {
 
 	app.Session = session
 
-	db, err := driver.ConnectDB(fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname))
+	db, err := driver.ConnectSQL(dsn)
 
 	if err != nil {
 		app.ErrorLog.Fatal(err)
 
 	}
+	defer db.SQL.Close()
 
-	app.InfoLog.Printf("Database connected successfully on port %d\n", port)
+	app.InfoLog.Println("Database connected successfully on port")
 
-	defer db.Close()
-
-	repo := handlers.NewRepository(&app, db)
+	repo := handlers.NewRepository(&app, db.SQL)
 	handlers.NewHandler(repo)
 
 	render.NewTemplate(&app)

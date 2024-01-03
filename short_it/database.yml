@@ -1,0 +1,7 @@
+development:
+  dialect: postgres
+  database: shortit
+  user: dansogbey
+  password:
+  host: 127.0.0.1
+  pool: 5

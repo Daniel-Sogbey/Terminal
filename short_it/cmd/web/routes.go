@@ -14,7 +14,7 @@ func Routes() http.Handler {
 
 	mux.Use(middleware.Logger)
 	mux.Use(NoSurf)
-	mux.Use(LoadSession)
+	// mux.Use(SessionLoad)
 
 	mux.Get("/", handlers.Repo.Home)
 	mux.Post("/", handlers.Repo.ShortenUrl)

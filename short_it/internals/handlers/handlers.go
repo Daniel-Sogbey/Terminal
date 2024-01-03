@@ -80,6 +80,8 @@ func (m *Repository) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 
 	originalUrlID, err := m.DB.InsertURL(originalUrl)
 
+	fmt.Println("----", originalUrl, "-----", err)
+
 	if err != nil {
 		m.app.ErrorLog.Println(err)
 		return
