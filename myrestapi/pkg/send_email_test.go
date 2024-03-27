@@ -15,7 +15,6 @@ func TestSendEmail(t *testing.T) {
 
 	ec := NewEmailClient()
 
-	
 	statusCode, err := ec.SendEmail("Hello World From Test", "mathematics06physics@gmail.com")
 
 	if statusCode > 300 {

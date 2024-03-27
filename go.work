@@ -1,84 +1,9 @@
 go 1.21.4
 
 use (
-	"./Build Rest APIs In Go/romanserver"
-	"./Daily algorithms in Go"
-	"./Daily algorithms in Go/CommonCharacters"
-	"./Daily algorithms in Go/FizzBuzz"
-	"./Daily algorithms in Go/IsSubsequence"
-	"./Daily algorithms in Go/MergeTwoSortedArrays"
-	"./Daily algorithms in Go/NumberOfSteps"
-	"./Daily algorithms in Go/PalindromeCheck"
-	"./Daily algorithms in Go/PascalsTriangle"
-	"./Daily algorithms in Go/RemoveDuplicateFromSortedArray"
-	"./Daily algorithms in Go/RemoveElement"
-	"./Daily algorithms in Go/Richest Customer Wealth"
-	"./Daily algorithms in Go/RunLengthEncoding"
-	"./Daily algorithms in Go/RunningSumOfIDArray"
-	"./Daily algorithms in Go/Sliding Window Technique"
-	"./Daily algorithms in Go/TwoNumberSums"
-	"./Daily algorithms in Go/caeser cipher encryptor"
-	"./file reader"
-	"./open source/africastalking-go"
-	"./open source/go-paystack"
-	"./open source/go-paystack-cli"
-	"./open source/gomono"
-	"./open source/soft"
-	.
-	./Algorithms
-	./ReadAndWriteFromJson
+	./allergycron
 	./api
-	./array_toolbox
-	./arrays
-	./blockchain
-	./blockchain_Practice
 	./bookings
-	./card
-	./channels
-	./channels-2
-	./cli
-	./daemons
-	./davi
-	./db-rest
-	./even_odd
-	./go-jwt
-	./go-routines
-	./go-server
-	./go-stripe
-	./guessing_game
-	./hello-world
-	./hello-world-2
-	./http
-	./interface
-	./interfaces-2
-	./json-server
-	./lenslock
-	./map
-	./modules
 	./myrestapi
-	./pillow
-	./pointers
-	./pomodoro-go-cli
-	./products-api
-	./projects/readinglist
-	./reservations
-	./rest
-	./service
 	./short_it
-	./smtp
-	./strings
-	./structs
-	./structs-2
-	./task-api
-	./tcp
-	./terminal
-	./test-api
-	./test-hello-world
-	./twitter-cli
-	./uno
-	./web-development
-	./web-service-gin
-	./writing_go_test
-	./youtube-series
-
 )

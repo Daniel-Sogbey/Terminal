@@ -28,7 +28,7 @@ type Content struct {
 
 type From struct {
 	Email string `json:"email"`
-	Name  string `json:"Name"`
+	Name  string `json:"name"`
 }
 
 type ReplyTo struct {
