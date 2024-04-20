@@ -10,7 +10,6 @@ func (app *application) logError(err error) {
 }
 
 func (app *application) errorResponse(w http.ResponseWriter, status int, message interface{}) {
-
 	env := envelope{"error": message}
 
 	err := app.writeJSON(w, status, env, nil)
@@ -47,4 +46,9 @@ func (app *application) badRequestResponse(w http.ResponseWriter, err error) {
 
 func (app *application) failedValidationResponse(w http.ResponseWriter, errors map[string]string) {
 	app.errorResponse(w, http.StatusUnprocessableEntity, errors)
+}
+
+func (app *application) editConflictResponse(w http.ResponseWriter) {
+	message := "unable to edit record due to an edit conflict, please try again "
+	app.errorResponse(w, http.StatusConflict, message)
 }
